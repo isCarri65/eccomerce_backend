@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-public class Size {
+public class Gallery {
     @Id @GeneratedValue
     private Long id;
-    private String name;
+    private String image;
 
-    @OneToMany(mappedBy = "size")
-    private List<ProductSize> productSize;
+    @OneToMany(mappedBy = "gallery")
+    private List<ProductGallery> productGallery;
 }

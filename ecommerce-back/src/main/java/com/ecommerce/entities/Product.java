@@ -13,6 +13,7 @@ public class Product {
     private Double sellPrice;
     private String description;
     private String color;
+    private String state;
 
     @ManyToOne
     private Category category;
