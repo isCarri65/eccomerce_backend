@@ -6,17 +6,22 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-public class PayingOrder {
+public class Order {
     @Id @GeneratedValue
     private Long id;
     private LocalDate date;
     private Double finalPrice;
-    private String payMethod;
-    private String state;
+    private String paymentMethod;
+
+    @ManyToOne
+    private User user;
 
     @ManyToOne
     private Address address;
 
-    @OneToMany(mappedBy = "payingOrder")
+    @Enumerated(EnumType.STRING)
+    private OrderStateENUM state;
+
+    @OneToMany(mappedBy = "Order")
     private List<Detail> details;
 }

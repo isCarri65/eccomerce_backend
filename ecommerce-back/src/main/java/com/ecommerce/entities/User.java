@@ -1,7 +1,6 @@
 package com.ecommerce.entities;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,7 +13,9 @@ public class User {
     private LocalDate birthDate;
     private String email;
     private String password;
-    private String role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<UserAddress> userAddresses;
