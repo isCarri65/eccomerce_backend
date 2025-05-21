@@ -1,15 +1,19 @@
+
 package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 
 @Entity
-public class UserAddress {
-    @Id @GeneratedValue
+public class Favorite {
+    @Id
+    @GeneratedValue
     private Long id;
 
     @ManyToOne
     private User idUser;
 
     @ManyToOne
-    private Address idAddress;
+    private Product idProduct;
+
+    private boolean state;
 }

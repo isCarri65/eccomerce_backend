@@ -10,5 +10,5 @@ public class Gallery {
     private String image;
 
     @OneToMany(mappedBy = "gallery")
-    private List<ProductGallery> productGallery;
+    private List<ProductGallery> productGalleries;
 }

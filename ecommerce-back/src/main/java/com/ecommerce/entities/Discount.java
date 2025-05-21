@@ -12,8 +12,11 @@ public class Discount {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double percentage;
-    private String state;
+    private Boolean state;
 
     @OneToMany(mappedBy = "discount")
     private List<ProductDiscount> productDiscounts;
+
+    @OneToMany(mappedBy = "discount")
+    private List<OrderDetail> orderDetailDiscounts;
 }

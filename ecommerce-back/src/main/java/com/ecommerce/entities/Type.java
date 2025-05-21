@@ -11,5 +11,5 @@ public class Type {
     private String name;
 
     @OneToMany(mappedBy = "type")
-    private List<Category> categories;
+    private List<CategoryType> categoryTypes;
 }

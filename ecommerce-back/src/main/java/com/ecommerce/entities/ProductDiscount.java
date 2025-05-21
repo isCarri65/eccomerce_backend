@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 public class ProductDiscount {
     @Id @GeneratedValue
     private Long id;
-    private String state;
+    private Boolean state;
 
     @ManyToOne
     private Product product;

@@ -14,14 +14,14 @@ public class Order {
     private String paymentMethod;
 
     @ManyToOne
-    private User user;
+    private User idUser;
 
     @ManyToOne
-    private Address address;
+    private Address idAddress;
 
     @Enumerated(EnumType.STRING)
     private OrderStateENUM state;
 
     @OneToMany(mappedBy = "Order")
-    private List<Detail> details;
+    private List<OrderDetail> details;
 }

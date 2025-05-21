@@ -9,6 +9,9 @@ public class Size {
     private Long id;
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private SizeTypeENUM sizeType;
+
     @OneToMany(mappedBy = "size")
-    private List<ProductVariantSize> productVarianrSize;
+    private List<ProductVariant> productVariantSizes;
 }

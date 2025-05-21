@@ -1,5 +1,9 @@
 package com.ecommerce.entities;
 
+import jakarta.persistence.*;
+
+import java.util.List;
+
 @Entity
 public class ProductVariant {
     @Id @GeneratedValue
@@ -16,7 +20,7 @@ public class ProductVariant {
     @ManyToOne
     private Color color;
 
-    @OneToMany(mappedBy = "ProductVariant")
-    private List<Detail> details;
+    @OneToMany(mappedBy = "productVariant")
+    private List<OrderDetail> details;
 
 }

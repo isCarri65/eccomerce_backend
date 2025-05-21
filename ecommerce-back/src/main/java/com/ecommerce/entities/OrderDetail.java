@@ -1,7 +1,9 @@
 package com.ecommerce.entities;
 
+import jakarta.persistence.*;
+
 @Entity
-public class Detail {
+public class OrderDetail {
     @Id @GeneratedValue
     private Long id;
     private Integer quantity;
@@ -9,12 +11,12 @@ public class Detail {
     private Double totalPrice;
 
     @ManyToOne
-    private Order order;
+    private Order idOrder;
 
     @ManyToOne
-    private ProductVariant productVariant;
+    private ProductVariant idProductVariant;
 
     @ManyToOne
-    private Discount discount;
+    private Discount idDiscount;
 
 }
