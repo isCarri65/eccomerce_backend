@@ -3,13 +3,14 @@ package com.ecommerce.entities;
 import jakarta.persistence.*;
 
 @Entity
-public class UserAddress {
+public class ProductGallery {
     @Id @GeneratedValue
     private Long id;
+    private String state;
 
     @ManyToOne
-    private User idUser;
+    private Product product;
 
     @ManyToOne
-    private Address idAddress;
+    private Gallery gallery;
 }

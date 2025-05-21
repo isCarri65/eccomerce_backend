@@ -8,21 +8,26 @@ public class Product {
     @Id @GeneratedValue
     private Long id;
     private String name;
-    private Integer quantity;
     private Double buyPrice;
     private Double sellPrice;
     private String description;
-    private String color;
+    private Boolean state;
 
-    @ManyToOne
-    private Category category;
-
-    @ManyToOne
-    private Size size;
+    @Enumerated(EnumType.STRING)
+    private ProductGenreENUM genre;
 
     @OneToMany(mappedBy = "product")
-    private List<Detail> details;
+    private List<Favorite> productFavorites;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductVariant> productVariants;
 
     @OneToMany(mappedBy = "product")
     private List<ProductDiscount> productDiscounts;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductCategory> productCategories;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductGallery> productGalleries;
 }

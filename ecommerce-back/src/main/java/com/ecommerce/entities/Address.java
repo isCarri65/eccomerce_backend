@@ -16,4 +16,7 @@ public class Address {
 
     @OneToMany(mappedBy = "address")
     private List<UserAddress> userAddresses;
+
+    @OneToMany(mappedBy = "address")
+    private List<Order> orders;
 }

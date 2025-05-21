@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-public class Type {
-    @Id
-    @GeneratedValue
+public class Color {
+    @Id @GeneratedValue
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "type")
-    private List<CategoryType> categoryTypes;
+    @OneToMany(mappedBy = "color")
+    private List<ProductVariant> productVariantColors;
 }
