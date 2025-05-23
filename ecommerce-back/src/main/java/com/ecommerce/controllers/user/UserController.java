@@ -1,70 +1,51 @@
-package com.ecommerce.controllers;
-
 import com.ecommerce.entities.User;
-import com.ecommerce.entities.Role;
 import com.ecommerce.repositories.UserRepository;
+import com.ecommerce.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(""/users"")
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    // 🔒 Crear usuario (solo ADMIN puede asignar role ADMIN)
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user, HttpServletRequest request) {
-        String requesterRole = (String) request.getAttribute("role");
-
-        // Solo ADMIN puede asignar rol ADMIN
-        if (user.getRole() == Role.ADMIN && !"ADMIN".equals(requesterRole)) {
-            user.setRole(Role.USER);
-        }
-
-        return ResponseEntity.ok(userRepository.save(user));
+        return ResponseEntity.ok(userService.createUser(user, request));
     }
 
-    // 🔒 Obtener todos los usuarios (solo ADMIN)
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers(HttpServletRequest request) {
-        if (!"ADMIN".equals(request.getAttribute("role"))) {
+        if (!""ADMIN"".equals(request.getAttribute(""role""))) {
             return ResponseEntity.status(403).build();
         }
-        return ResponseEntity.ok(userRepository.findAll());
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // 🔒 Actualizar usuario por ID (solo ADMIN)
-    @PutMapping("/{id}")
+    @PutMapping(""/{id}"")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User newData, HttpServletRequest request) {
-        if (!"ADMIN".equals(request.getAttribute("role"))) {
+        if (!""ADMIN"".equals(request.getAttribute(""role""))) {
             return ResponseEntity.status(403).build();
         }
 
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setUsername(newData.getUsername());
-                    user.setPassword(newData.getPassword());
-                    user.setRole(newData.getRole());
-                    return ResponseEntity.ok(userRepository.save(user));
-                })
+        return userService.updateUser(id, newData)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 🔒 Eliminar usuario (solo ADMIN)
-    @DeleteMapping("/{id}")
+    @DeleteMapping(""/{id}"")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id, HttpServletRequest request) {
-        if (!"ADMIN".equals(request.getAttribute("role"))) {
+        if (!""ADMIN"".equals(request.getAttribute(""role""))) {
             return ResponseEntity.status(403).build();
         }
 
-        userRepository.deleteById(id);
+        userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
 }
