@@ -1,11 +1,10 @@
 package com.ecommerce.entities;
 
-import com.ecommerce.entities.Category;
-import com.ecommerce.entities.Product;
 import jakarta.persistence.*;
-import java.util.*;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "category_type")
 public class CategoryType {
     @Id @GeneratedValue
     private Long id;

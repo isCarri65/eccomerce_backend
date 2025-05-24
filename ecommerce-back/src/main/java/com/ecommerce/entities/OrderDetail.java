@@ -1,8 +1,10 @@
 package com.ecommerce.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "order_detail")
 public class OrderDetail {
     @Id @GeneratedValue
     private Long id;

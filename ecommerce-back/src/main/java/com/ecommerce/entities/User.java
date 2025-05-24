@@ -1,10 +1,12 @@
 package com.ecommerce.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "user")
 public class User {
     @Id @GeneratedValue
     private Long id;

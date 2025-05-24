@@ -1,11 +1,13 @@
 package com.ecommerce.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "order")
 public class Order {
     @Id @GeneratedValue
     private Long id;
