@@ -10,8 +10,10 @@ public class UserAddress {
     private Long id;
 
     @ManyToOne
-    private User idUser;
+    @JoinColumn(name = "id_user")
+    private User user;
 
     @ManyToOne
-    private Address idAddress;
+    @JoinColumn(name = "id_address")
+    private Address address;
 }

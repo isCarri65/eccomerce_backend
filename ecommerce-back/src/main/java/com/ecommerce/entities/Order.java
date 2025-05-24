@@ -19,7 +19,8 @@ public class Order {
     private User idUser;
 
     @ManyToOne
-    private Address idAddress;
+    @JoinColumn(name = "id_address")
+    private Address address;
 
     @Enumerated(EnumType.STRING)
     private OrderStateENUM state;

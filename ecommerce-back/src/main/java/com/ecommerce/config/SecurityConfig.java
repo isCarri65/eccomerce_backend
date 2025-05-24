@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class SecurityConfig {
 
     @Bean
-    public FilterRegistrationBean<Filter> jwtFilter(JwtFilter filter) {
+    public FilterRegistrationBean<Filter> filterChain(JwtFilter filter) {
         FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
         registration.setFilter(filter);
         registration.addUrlPatterns("/api/*"); // Rutas protegidas
