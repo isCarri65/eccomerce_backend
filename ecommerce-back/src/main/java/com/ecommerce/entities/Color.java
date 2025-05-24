@@ -7,10 +7,10 @@ import java.util.List;
 @Entity
 @Table(name = "color")
 public class Color {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
     @OneToMany(mappedBy = "color")
-    private List<ProductVariant> productVariantColors;
+    private List<ProductVariant> productsVariants;
 }

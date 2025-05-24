@@ -7,7 +7,7 @@ import java.util.List;
 @Entity
 @Table(name = "size")
 public class Size {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 

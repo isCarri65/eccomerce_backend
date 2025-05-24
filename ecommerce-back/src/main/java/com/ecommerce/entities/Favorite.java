@@ -8,14 +8,16 @@ import jakarta.persistence.Table;
 @Table(name = "favorite")
 public class Favorite {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    private User idUser;
+    @JoinColumn(name = "id_user")
+    private User user;
 
     @ManyToOne
-    private Product idProduct;
+    @JoinColumn(name = "id_product")
+    private Product product;
 
     private boolean state;
 }

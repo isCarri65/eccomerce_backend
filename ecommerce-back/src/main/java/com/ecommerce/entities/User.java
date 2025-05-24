@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -30,12 +32,17 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
-    private List<UserAddress> userAddresses;
+    @ManyToMany
+    @JoinTable(
+            name = "user_address",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    private Set<Address> addresses = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+    private Set<Order> orders = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Favorite> favorites;
+    private Set<Favorite> favorites = new HashSet<>();
 }

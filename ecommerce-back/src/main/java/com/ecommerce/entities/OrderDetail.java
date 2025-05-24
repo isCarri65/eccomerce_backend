@@ -6,19 +6,22 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "order_detail")
 public class OrderDetail {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer quantity;
     private Double unitPrice;
     private Double totalPrice;
 
     @ManyToOne
-    private Order idOrder;
+    @JoinColumn(name = "id_order")
+    private Order order;
 
     @ManyToOne
-    private ProductVariant idProductVariant;
+    @JoinColumn(name = "id_product_variant")
+    private ProductVariant productVariant;
 
     @ManyToOne
-    private Discount idDiscount;
+    @JoinColumn(name = "id_discount")
+    private Discount discount;
 
 }

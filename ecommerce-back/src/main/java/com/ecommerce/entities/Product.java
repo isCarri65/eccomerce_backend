@@ -2,12 +2,15 @@ package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "product")
 public class Product {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Double buyPrice;
@@ -19,7 +22,7 @@ public class Product {
     private ProductGenreENUM genre;
 
     @OneToMany(mappedBy = "product")
-    private List<Favorite> productFavorites;
+    private Set<Favorite> productFavorites = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
     private List<ProductVariant> productVariants;
@@ -27,8 +30,9 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<ProductDiscount> productDiscounts;
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductCategory> productCategories;
+    @ManyToMany
+    @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_category"))
+    private Set<Category> categories = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
     private List<ProductGallery> productGalleries;

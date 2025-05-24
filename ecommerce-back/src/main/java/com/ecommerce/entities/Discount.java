@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "discount")
 public class Discount {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -17,8 +19,8 @@ public class Discount {
     private Boolean state;
 
     @OneToMany(mappedBy = "discount")
-    private List<ProductDiscount> productDiscounts;
+    private Set<ProductDiscount> productDiscounts = new HashSet<>();
 
     @OneToMany(mappedBy = "discount")
-    private List<OrderDetail> orderDetailDiscounts;
+    private Set<OrderDetail> orderDetails = new HashSet<>();
 }
