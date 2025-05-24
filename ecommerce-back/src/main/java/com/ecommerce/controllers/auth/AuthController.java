@@ -3,6 +3,8 @@ package com.ecommerce.controllers.auth;
 import com.ecommerce.dto.LoginRequest;
 import com.ecommerce.dto.RegisterRequest;
 import com.ecommerce.entities.JwtResponse;
+import com.ecommerce.entities.Role;
+import com.ecommerce.entities.User;
 import com.ecommerce.repositories.UserRepository;
 import com.ecommerce.security.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,9 +44,9 @@ public class AuthController {
         }
 
         User user = User.builder()
-                .username(request.getUsername())
+                .name(request.getUsername())
                 .email(request.getEmail())
-                .password(request.getPassword()) // ⚠️ En producción, nunca se guarda texto plano
+                .password(request.getPassword())
                 .role(Role.USER)
                 .build();
 

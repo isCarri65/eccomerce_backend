@@ -1,10 +1,15 @@
 package com.ecommerce.security.jwt;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
 @Component
 public class JwtUtil {
+
     private final String SECRET = "clave-secreta";
     private final long EXPIRATION_TIME = 86400000; // 1 día
 
@@ -14,13 +19,13 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
+            getClaims(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -28,10 +33,17 @@ public class JwtUtil {
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody().getSubject();
+        return getClaims(token).getSubject();
     }
 
     public String getRoleFromToken(String token) {
-        return (String) Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody().get("role");
+        return getClaims(token).get("role", String.class);
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

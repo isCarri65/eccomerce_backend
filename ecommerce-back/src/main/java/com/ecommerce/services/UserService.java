@@ -32,7 +32,7 @@ public class UserService {
             }
         }
         if (user.getRole() == null) {
-            user.setRole(Role.USER); // default
+            user.setRole(Role.USER);
         }
         return userRepository.save(user);
     }
