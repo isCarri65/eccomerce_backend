@@ -22,6 +22,8 @@ public class Address extends Base{
     private String street;
     private Integer number;
     private String apartment;
+    private String aptNumberAndFloor;
+    private String province;
     private String locality;
     private String postal;
 
