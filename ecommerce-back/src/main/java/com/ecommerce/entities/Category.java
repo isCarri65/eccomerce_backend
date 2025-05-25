@@ -1,6 +1,10 @@
 package com.ecommerce.entities;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
@@ -8,10 +12,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "category")
-public class Category {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
+public class Category extends Base{
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_gallery")

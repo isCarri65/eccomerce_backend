@@ -2,12 +2,18 @@ package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "order_detail")
-public class OrderDetail {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
+public class OrderDetail extends Base{
     private Integer quantity;
     private Double unitPrice;
     private Double totalPrice;

@@ -11,19 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class UserService {
-
+public class UserService extends BaseService<User, Long>{
     private final UserRepository userRepository;
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public UserService(UserRepository userRepository) {
+        super(userRepository);
+        this.userRepository = userRepository;
     }
-
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
     public User createUser(User user) {
         if (user.getRole() == Role.ADMIN) {
             var current = getCurrentUser();
@@ -34,11 +27,10 @@ public class UserService {
         if (user.getRole() == null) {
             user.setRole(Role.USER);
         }
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("El email ya está registrado.");
+        }
         return userRepository.save(user);
-    }
-
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
     }
 
     private User getCurrentUser() {
@@ -47,4 +39,5 @@ public class UserService {
         String email = auth.getName();
         return userRepository.findByEmail(email).orElse(null);
     }
+
 }

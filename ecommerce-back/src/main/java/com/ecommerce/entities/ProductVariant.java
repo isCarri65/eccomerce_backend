@@ -2,14 +2,21 @@ package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "product_variant")
-public class ProductVariant {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
+public class ProductVariant extends Base {
+
     private Integer quantity;
     private Boolean state;
 

@@ -2,6 +2,10 @@ package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -10,9 +14,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "discount")
-public class Discount {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
+public class Discount extends Base{
     private LocalDate startDate;
     private LocalDate endDate;
     private Double percentage;
