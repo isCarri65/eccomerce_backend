@@ -31,5 +31,5 @@ public class Address extends Base{
     private Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "address")
-    private List<Order> orders;
+    private List<PurchaseOrder> orders;
 }

@@ -8,19 +8,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "order_detail")
+@Table(name = "purchase_order_detail")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class OrderDetail extends Base{
+public class PurchaseOrderDetail extends Base{
     private Integer quantity;
     private Double unitPrice;
     private Double totalPrice;
 
     @ManyToOne
     @JoinColumn(name = "id_order")
-    private Order order;
+    private PurchaseOrder purchaseOrder;
 
     @ManyToOne
     @JoinColumn(name = "id_product_variant")

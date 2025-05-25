@@ -34,6 +34,6 @@ public class ProductVariant extends Base {
     private Color color;
 
     @OneToMany(mappedBy = "productVariant")
-    private List<OrderDetail> details;
+    private List<PurchaseOrderDetail> details;
 
 }

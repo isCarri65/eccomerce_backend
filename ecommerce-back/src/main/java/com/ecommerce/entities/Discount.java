@@ -28,5 +28,5 @@ public class Discount extends Base{
     private Set<ProductDiscount> productDiscounts = new HashSet<>();
 
     @OneToMany(mappedBy = "discount")
-    private Set<OrderDetail> orderDetails = new HashSet<>();
+    private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
 }
