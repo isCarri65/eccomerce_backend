@@ -44,7 +44,7 @@ public class AuthController {
         }
 
         User user = User.builder()
-                .name(request.getUsername())
+                .name(request.getName())
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .role(Role.USER)
