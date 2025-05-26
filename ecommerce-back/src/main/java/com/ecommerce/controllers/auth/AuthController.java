@@ -9,7 +9,9 @@ import com.ecommerce.repositories.UserRepository;
 import com.ecommerce.security.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -17,10 +19,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+
 public class AuthController {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
@@ -37,19 +43,24 @@ public class AuthController {
         return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
     }
 
+
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("El email ya está registrado");
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            return ResponseEntity.badRequest().body("Email already in use");
         }
 
-        User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .role(Role.USER)
-                .build();
+        User user = new User();
+        user.setName(request.getName());
+        user.setSecondName(request.getSecondName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // hash
+        user.setBirthDate(request.getBirthDate());
+        user.setRole(Role.USER);
 
-        return ResponseEntity.ok(userRepository.save(user));
+        userRepository.save(user);
+        return ResponseEntity.ok("User registered successfully");
     }
+
 }
