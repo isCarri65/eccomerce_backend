@@ -1,5 +1,6 @@
 package com.ecommerce.security.jwt;
 
+import com.ecommerce.entities.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,12 +11,12 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "clave-secreta";
+    private final String SECRET = "$2a$10$ZX7e5vq6XXaVcAAE4Pt4E.uzdJjPJzNUTXzMg/koblExMETJ7RCrO";
     private final long EXPIRATION_TIME = 86400000; // 1 día
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String email, Role role) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -32,7 +33,7 @@ public class JwtUtil {
         }
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getEmailFromToken(String token) {
         return getClaims(token).getSubject();
     }
 
