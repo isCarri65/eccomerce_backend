@@ -39,9 +39,4 @@ public class User extends Base{
     )
     private Set<Address> addresses = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<Order> orders = new HashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<Favorite> favorites = new HashSet<>();
 }
