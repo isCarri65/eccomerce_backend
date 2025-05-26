@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-
 public class UserController extends BaseController<User, Long> {
 
     private final UserService userService;

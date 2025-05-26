@@ -32,6 +32,4 @@ public class PurchaseOrder extends Base{
     @Enumerated(EnumType.STRING)
     private PurchaseOrderStateENUM state;
 
-    @OneToMany(mappedBy = "purchaseOrder")
-    private List<PurchaseOrderDetail> details;
 }

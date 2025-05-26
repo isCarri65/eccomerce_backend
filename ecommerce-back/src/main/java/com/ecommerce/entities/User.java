@@ -35,21 +35,6 @@ public class User extends Base implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_address",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
-    private Set<Address> addresses = new HashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<PurchaseOrder> orders = new HashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<Favorite> favorites = new HashSet<>();
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

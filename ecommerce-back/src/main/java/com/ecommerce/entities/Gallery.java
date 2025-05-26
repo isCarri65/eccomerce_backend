@@ -18,7 +18,5 @@ import java.util.Set;
 @Data
 @Builder
 public class Gallery extends Base{
-
     private String image;
-
 }

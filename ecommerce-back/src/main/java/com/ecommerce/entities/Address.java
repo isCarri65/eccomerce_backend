@@ -27,4 +27,8 @@ public class Address extends Base{
     private String locality;
     private String postal;
 
+    @ManyToOne
+    @JoinColumn(name="id_user")
+    private User user;
+
 }

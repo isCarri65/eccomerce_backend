@@ -33,7 +33,4 @@ public class ProductVariant extends Base {
     @JoinColumn(name = "id_color")
     private Color color;
 
-    @OneToMany(mappedBy = "productVariant")
-    private List<PurchaseOrderDetail> details;
-
 }

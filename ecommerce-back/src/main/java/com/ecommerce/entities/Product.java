@@ -28,9 +28,6 @@ public class Product extends Base{
     private ProductGenreENUM genre;
 
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductDiscount> productDiscounts;
-
     @ManyToMany
     @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_category"))
     private Set<Category> categories = new HashSet<>();

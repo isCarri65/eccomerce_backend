@@ -24,9 +24,4 @@ public class Discount extends Base{
     private Double percentage;
     private Boolean state;
 
-    @OneToMany(mappedBy = "discount")
-    private Set<ProductDiscount> productDiscounts = new HashSet<>();
-
-    @OneToMany(mappedBy = "discount")
-    private Set<PurchaseOrderDetail> purchaseOrderDetails = new HashSet<>();
 }

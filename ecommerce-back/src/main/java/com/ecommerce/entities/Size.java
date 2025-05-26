@@ -21,6 +21,4 @@ public class Size extends Base{
     @Enumerated(EnumType.STRING)
     private SizeTypeENUM sizeType;
 
-    @OneToMany(mappedBy = "size")
-    private List<ProductVariant> productVariantSizes;
 }
