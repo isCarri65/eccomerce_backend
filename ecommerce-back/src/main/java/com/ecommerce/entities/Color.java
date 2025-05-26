@@ -18,6 +18,4 @@ import java.util.List;
 public class Color extends Base{
     private String name;
 
-    @OneToMany(mappedBy = "color")
-    private List<ProductVariant> productsVariants;
 }

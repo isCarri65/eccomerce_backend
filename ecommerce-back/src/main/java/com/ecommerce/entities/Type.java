@@ -20,6 +20,4 @@ import java.util.Set;
 public class Type extends Base{
     private String name;
 
-    @ManyToMany(mappedBy = "types")
-    private Set<Category> categories = new HashSet<>();
 }

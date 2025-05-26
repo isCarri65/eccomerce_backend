@@ -17,6 +17,7 @@ import java.util.Set;
 @Data
 @Builder
 public class Category extends Base{
+    private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_gallery")
@@ -26,6 +27,4 @@ public class Category extends Base{
     @JoinTable(name = "category_type", joinColumns = @JoinColumn(name = "id_category"), inverseJoinColumns = @JoinColumn(name = "id_type"))
     private Set<Type> types = new HashSet<>();
 
-    @ManyToMany(mappedBy = "categories")
-    private Set<Product> products = new HashSet<>();
 }
