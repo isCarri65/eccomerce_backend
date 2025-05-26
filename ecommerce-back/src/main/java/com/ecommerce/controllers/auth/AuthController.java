@@ -35,7 +35,7 @@ public class AuthController {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (user.getPassword().equals(request.getPassword())) {
-                String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+                String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
                 return ResponseEntity.ok(new JwtResponse(token));
             }
         }
@@ -46,21 +46,23 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("Email already in use");
+            return ResponseEntity.badRequest().build();
         }
 
         User user = new User();
         user.setName(request.getName());
         user.setSecondName(request.getSecondName());
         user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword())); // hash
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setBirthDate(request.getBirthDate());
         user.setRole(Role.USER);
 
         userRepository.save(user);
-        return ResponseEntity.ok("User registered successfully");
+
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
 }
