@@ -27,11 +27,6 @@ public class Product extends Base{
     @Enumerated(EnumType.STRING)
     private ProductGenreENUM genre;
 
-    @OneToMany(mappedBy = "product")
-    private Set<Favorite> productFavorites = new HashSet<>();
-
-    @OneToMany(mappedBy = "product")
-    private List<ProductVariant> productVariants;
 
     @OneToMany(mappedBy = "product")
     private List<ProductDiscount> productDiscounts;
@@ -40,6 +35,4 @@ public class Product extends Base{
     @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_category"))
     private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductGallery> productGalleries;
 }

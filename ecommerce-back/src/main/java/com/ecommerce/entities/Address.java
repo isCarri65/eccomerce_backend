@@ -26,4 +26,5 @@ public class Address extends Base{
     private String province;
     private String locality;
     private String postal;
+
 }

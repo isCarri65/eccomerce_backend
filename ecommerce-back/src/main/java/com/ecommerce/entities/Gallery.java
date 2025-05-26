@@ -21,6 +21,4 @@ public class Gallery extends Base{
 
     private String image;
 
-    @OneToMany(mappedBy = "gallery")
-    private Set<ProductGallery> productGalleries = new HashSet<>();
 }
