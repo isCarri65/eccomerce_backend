@@ -26,10 +26,4 @@ public class Address extends Base{
     private String province;
     private String locality;
     private String postal;
-
-    @ManyToMany(mappedBy = "addresses")
-    private Set<User> users = new HashSet<>();
-
-    @OneToMany(mappedBy = "address")
-    private List<PurchaseOrder> orders;
 }
