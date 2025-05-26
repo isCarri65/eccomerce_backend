@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "clave-secreta";
+    private final String SECRET = "$2a$10$ZX7e5vq6XXaVcAAE4Pt4E.uzdJjPJzNUTXzMg/koblExMETJ7RCrO";
     private final long EXPIRATION_TIME = 86400000; // 1 día
 
     public String generateToken(String email, Role role) {
