@@ -11,12 +11,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "order")
+@Table(name = "purchase_order")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Order extends Base{
+public class PurchaseOrder extends Base{
     private LocalDate date;
     private Double finalPrice;
     private String paymentMethod;
@@ -27,11 +27,11 @@ public class Order extends Base{
 
     @ManyToOne
     @JoinColumn(name = "id_address")
-    private Address address; // <- esto se tiene que llamar tal cual se lo referencia en el mappedby
+    private Address address;
 
     @Enumerated(EnumType.STRING)
-    private OrderStateENUM state;
+    private PurchaseOrderStateENUM state;
 
     @OneToMany(mappedBy = "order")
-    private List<OrderDetail> details;
+    private List<PurchaseOrderDetail> details;
 }

@@ -1,6 +1,6 @@
 package com.ecommerce.entities;
 
-public enum OrderStateENUM {
+public enum PurchaseOrderStateENUM {
     PAID,
     SHIPPED,
     DELIVERED

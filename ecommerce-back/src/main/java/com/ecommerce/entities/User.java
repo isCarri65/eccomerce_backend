@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,4 +38,9 @@ public class User extends Base{
     )
     private Set<Address> addresses = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<PurchaseOrder> orders = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Favorite> favorites = new HashSet<>();
 }

@@ -24,7 +24,7 @@ public class JwtFilter implements Filter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
-                request.setAttribute("username", jwtUtil.getUsernameFromToken(token));
+                request.setAttribute("name", jwtUtil.getUsernameFromToken(token));
                 request.setAttribute("role", jwtUtil.getRoleFromToken(token));
             }
         }
