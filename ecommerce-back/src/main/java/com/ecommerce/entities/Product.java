@@ -31,5 +31,4 @@ public class Product extends Base{
     @ManyToMany
     @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_category"))
     private Set<Category> categories = new HashSet<>();
-
 }
