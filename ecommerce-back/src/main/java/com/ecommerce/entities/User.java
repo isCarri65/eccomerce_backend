@@ -25,7 +25,7 @@ import java.util.Set;
 public class User extends Base implements UserDetails {
     @NotBlank
     private String name;
-    private String secondName;
+    private String lastName;
     private LocalDate birthDate;
 
     @Column(unique = true)
@@ -39,6 +39,7 @@ public class User extends Base implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
 
     @Override
     public String getUsername() {
