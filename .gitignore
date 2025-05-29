@@ -1,9 +1,7 @@
 # Ignorar configuración local de IntelliJ
-.idea/
-
+.idea
 # Ignorar carpetas y archivos generados por Maven dentro del proyecto
-ecommerce-back [demo]/target/
-ecommerce-back [demo]/*.class
+ecommerce-back/target
 
 # Ignorar archivos temporales comunes
 *.log
