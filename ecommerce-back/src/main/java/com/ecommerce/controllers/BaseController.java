@@ -2,11 +2,14 @@ package com.ecommerce.controllers;
 
 import com.ecommerce.entities.Base;
 import com.ecommerce.services.BaseService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 public abstract class BaseController<E extends Base, ID extends Serializable> {
 
@@ -23,9 +26,15 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
 
     @GetMapping("/{id}")
     public ResponseEntity<E> findById(@PathVariable ID id){
+        System.out.println("id: "+id);
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    public ResponseEntity<Set<E>> getAllActives(){
+        return ResponseEntity.ok(service.getAllActives());
+
     }
 
     @PostMapping
@@ -39,8 +48,15 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable ID id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> delete(@PathVariable ID id) {
+        System.out.println("Entrando al delete");
+        try {
+            service.delete(id);
+            return ResponseEntity.ok("Eliminado correctamente");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el recurso con ID: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar el recurso.");
+        }
     }
 }
