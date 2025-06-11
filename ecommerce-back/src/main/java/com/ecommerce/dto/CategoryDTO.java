@@ -3,7 +3,7 @@ package com.ecommerce.dto;
 import lombok.Data;
 
 @Data
-public class TypeDTO {
+public class CategoryDTO {
     private Long id;
     private String name;
 }

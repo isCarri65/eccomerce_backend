@@ -1,4 +1,11 @@
 package com.ecommerce.dto;
 
-public record FavoriteDTO(Long id, Long idUser, Long idProduct, Boolean state) {
+import lombok.Data;
+
+@Data
+public class FavoriteDTO {
+    private Long id;
+    private Long idUser;
+    private Long idProduct;
+    private Boolean state;
 }
