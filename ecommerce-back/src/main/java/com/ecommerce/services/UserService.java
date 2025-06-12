@@ -4,6 +4,7 @@ import com.ecommerce.entities.Role;
 import com.ecommerce.entities.User;
 import com.ecommerce.repositories.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,27 +14,23 @@ public class UserService extends BaseService<User, Long>{
         super(userRepository);
         this.userRepository = userRepository;
     }
-    public User createUser(User user) {
-        if (user.getRole() == Role.ADMIN) {
-            var current = getCurrentUser();
-            if (current == null || current.getRole() != Role.ADMIN) {
-                throw new RuntimeException("Only ADMIN users can create another ADMIN.");
-            }
+
+    public User getCurrentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("Usuario no autenticado");
         }
-        if (user.getRole() == null) {
-            user.setRole(Role.USER);
+        String email = auth.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
+    }
+    public String getCurrentEmail() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("Usuario no autenticado");
         }
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("El email ya está registrado.");
-        }
-        return userRepository.save(user);
+        return auth.getName();
     }
 
-    private User getCurrentUser() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) return null;
-        String email = auth.getName();
-        return userRepository.findByEmail(email).orElse(null);
-    }
 
 }
