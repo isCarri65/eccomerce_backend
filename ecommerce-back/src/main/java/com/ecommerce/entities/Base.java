@@ -22,5 +22,16 @@ public abstract class Base implements Serializable {
 
     @Column(name = "deleted")
     protected boolean deleted = false;
+    public Long getId() {
+        return id;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 
 }

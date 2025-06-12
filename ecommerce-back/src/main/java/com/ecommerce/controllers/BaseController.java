@@ -20,17 +20,17 @@ public abstract class BaseController<E extends Base, ID extends Serializable> {
     }
 
     @GetMapping
-    public ResponseEntity<List<E>> getAll(){
+    public ResponseEntity<List<E>> getAll() throws Exception {
         return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<E> findById(@PathVariable ID id){
-        System.out.println("id: "+id);
-        return service.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<E> findById(@PathVariable ID id) throws Exception {
+        System.out.println("id: " + id);
+        E entity = service.findById(id);
+        return entity != null ? ResponseEntity.ok(entity) : ResponseEntity.notFound().build();
     }
+
 
     public ResponseEntity<Set<E>> getAllActives(){
         return ResponseEntity.ok(service.getAllActives());
