@@ -27,9 +27,15 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
     public Set<E> getAllActives() {
         return baseRepository.getAllByDeleted(false);
     }
+    public Set<E> getAllDeleted() {
+        return baseRepository.getAllByDeleted(true);
+    }
 
     public Optional<E> findById(ID id) {
         return baseRepository.findById(id);
+    }
+    public Optional<E> findByIdActive(ID id) {
+        return baseRepository.findByIdAndDeleted(id, false);
     }
 
     @Transactional
@@ -37,9 +43,9 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         return baseRepository.save(entity);
     }
 
-    public E update(E entity) throws Exception {
-        if (!baseRepository.existsById((ID) entity.getId())) {
-            throw new Exception("Entidad no encontrada para actualizar");
+    public E update(ID id, E entity) throws Exception {
+        if (!baseRepository.existsById(id)) {
+            throw new EntityNotFoundException("Entidad no encontrada para actualizar");
         }
         return baseRepository.save(entity);
     }
