@@ -3,8 +3,10 @@ package com.ecommerce.services.auth;
 import com.ecommerce.dto.JwtResponse;
 import com.ecommerce.dto.LoginRequest;
 import com.ecommerce.dto.RegisterRequest;
+import com.ecommerce.dto.User.UserDTO;
 import com.ecommerce.entities.Role;
 import com.ecommerce.entities.User;
+import com.ecommerce.mappers.UserMapper;
 import com.ecommerce.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,9 +32,13 @@ public class AuthService {
        if(optionalUser.isEmpty()){
            throw new RuntimeException("User not found");
        } else {
+           UserDTO user = UserMapper.toDTO(optionalUser.get());
            UserDetails userDetails = optionalUser.get();
+           user.setRole(optionalUser.get().getRole());
+
            String token = jWTService.getToken(userDetails);
-           return new JwtResponse(token);
+
+           return new JwtResponse(token, user);
        }
 
     }
@@ -46,10 +52,16 @@ public class AuthService {
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
+
+        UserDTO userDTO = UserMapper.toDTO(user);
+        userDTO.setRole(user.getRole());
+
+
         String token = jWTService.getToken(user);
 
         return JwtResponse.builder()
                 .token(token)
+                .user(userDTO)
                 .build();
     }
 }
