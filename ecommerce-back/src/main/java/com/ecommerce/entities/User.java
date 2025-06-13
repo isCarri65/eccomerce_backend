@@ -27,6 +27,7 @@ public class User extends Base implements UserDetails {
     private String name;
     private String lastName;
     private LocalDate birthDate;
+    private String phoneNumber;
 
     @Column(unique = true)
     private String email;
