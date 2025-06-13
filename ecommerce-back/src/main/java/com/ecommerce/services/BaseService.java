@@ -60,4 +60,15 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
             throw new EntityNotFoundException("No se encontró la entidad con id: " + id);
         }
     }
+
+    public void reallyDelete(ID id) {
+        Optional<E> optionalEntity = baseRepository.findById(id);
+        if (optionalEntity.isPresent()) {
+            E entity = optionalEntity.get();
+            baseRepository.delete(entity); // elimina totalmente
+        } else {
+            throw new EntityNotFoundException("No se encontró la entidad con id: " + id);
+        }
+    }
+
 }
