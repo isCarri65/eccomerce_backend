@@ -3,9 +3,6 @@ package com.ecommerce.config;
 import com.ecommerce.repositories.UserRepository;
 import com.ecommerce.security.jwt.JwtAuthenticationFilter;
 import com.ecommerce.services.auth.JwtService;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.Filter;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,15 +19,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Bean
-    public JwtAuthenticationFilter jwtFilter( UserDetailsService userDetailsService, JwtService jwtService) {
-        return new JwtAuthenticationFilter( userDetailsService, jwtService);
-    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter, AuthenticationProvider authenticationProvider ) throws Exception {
         return http
