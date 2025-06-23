@@ -3,7 +3,7 @@ import com.ecommerce.dto.User.UpdateUserDTO;
 import com.ecommerce.dto.User.UserDTO;
 import com.ecommerce.entities.User;
 
-public class UserMapper {
+public class UserProfileMapper {
 
     public static UserDTO toDTO(User user) {
         UserDTO dto = new UserDTO();
@@ -11,13 +11,12 @@ public class UserMapper {
         dto.setLastName(user.getLastName());
         dto.setName(user.getName());
         dto.setBirthDate(user.getBirthDate());
-        dto.setRole(user.getRole());
+        dto.setRole(String.valueOf(user.getRole()));
         return dto;
     }
 
     public static void updateUserFromDTO(UpdateUserDTO dto, User user) {
         user.setBirthDate(dto.getBirthDate());
-        user.setEmail(dto.getEmail());
         user.setLastName(dto.getLastName());
         user.setName(dto.getName());
         user.setPhoneNumber(dto.getPhoneNumber());

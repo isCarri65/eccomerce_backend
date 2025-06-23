@@ -16,27 +16,30 @@ import java.util.Set;
 @Service
 public class AddressService extends BaseService<Address, Long>{
     private AddressRepository addressRepository;
-    public AddressService(AddressRepository addressRepository) {
+    private AddressMapper addressMapper;
+    public AddressService(AddressRepository addressRepository, AddressMapper addressMapper) {
         super(addressRepository);
+        this.addressMapper = addressMapper;
     }
 
     public Set<Address> getAllByUserId(Long userId){
         return  addressRepository.findAllByUser_Id(userId);
     }
-    public AddressDTO updateWhitDTO (Long id, UpdateAddressDTO addressDTO, String email) throws AccessDeniedException {
-        Optional<Address> optionalAddress = addressRepository.findById(id);
-        Address address = optionalAddress.orElseThrow(() -> new EntityNotFoundException("No se encontró la dirección con ID: " + id));
+
+
+    public AddressDTO updateWhitDTO (Long addressId, UpdateAddressDTO addressDTO, String email) throws AccessDeniedException {
+        Address address = addressRepository.findById(addressId).orElseThrow(() -> new EntityNotFoundException("No se encontró la dirección con ID: " + addressId));
         if (!email.equals(address.getUser().getEmail())){
             throw new AccessDeniedException("no tienes acceso a esta direccion");
         }
-        AddressMapper.updateDTOtoAddress(addressDTO, address);
-        return AddressMapper.toDTO(address);
+        Address updatedAddress = addressRepository.save(addressMapper.UDTOtoEntity(addressDTO, addressId));
+        return addressMapper.toDTO(updatedAddress);
     }
 
     public AddressDTO createWhitDTO (CreateAddressDTO addressDTO, Long userId) {
         addressDTO.setUserId(userId);
-        Address createAddress = AddressMapper.createDTOtoAddress(addressDTO);
-         Address createdAddress = addressRepository.save(createAddress);
-         return AddressMapper.toDTO(createdAddress);
+        Address address = addressMapper.CDTOtoEntity(addressDTO);
+         Address createdAddress = addressRepository.save(address);
+         return addressMapper.toDTO(createdAddress);
     }
 }

@@ -16,9 +16,12 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class ProductGallery extends Base{
-    private String image;
-
+    private String imageUrl;
+    private String publicId;
+    private String name;
+    private Boolean isMain = false ;
     @ManyToOne
     @JoinColumn(name = "id_product")
     private Product product;
+
 }

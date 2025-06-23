@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,8 +20,8 @@ import java.util.Set;
 @Builder
 public class Product extends Base{
     private String name;
-    private Double buyPrice;
-    private Double sellPrice;
+    private BigDecimal buyPrice;
+    private BigDecimal sellPrice;
     private String description;
     private Boolean state;
 

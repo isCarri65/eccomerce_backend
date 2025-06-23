@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductVariantRepository extends BaseRepository<ProductVariant, Long>{
+    boolean existsByProductIdAndQuantityGreaterThanAndStateTrue(Long productId, Integer quantity);
+
 }

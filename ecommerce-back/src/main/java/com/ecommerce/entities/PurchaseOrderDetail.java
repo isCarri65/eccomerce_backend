@@ -2,6 +2,7 @@ package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,16 +19,18 @@ public class PurchaseOrderDetail extends Base{
     private Double unitPrice;
     private Double totalPrice;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "id_order")
     private PurchaseOrder purchaseOrder;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "id_product_variant")
     private ProductVariant productVariant;
 
     @ManyToOne
     @JoinColumn(name = "id_discount")
-    private Discount discount;
+    private DiscountRule discount;
 
 }

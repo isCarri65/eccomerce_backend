@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 public class UpdateAddressDTO {
+
     private String street;
     private Integer number;
     private String apartment;
@@ -17,4 +18,6 @@ public class UpdateAddressDTO {
     private String province;
     private String locality;
     private String postal;
+    private Boolean deleted;
+    private Long userId;
 }

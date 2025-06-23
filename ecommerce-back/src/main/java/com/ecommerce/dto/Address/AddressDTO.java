@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddressDTO {
+    private Long id;
     private String street;
     private Integer number;
     private String apartment;
@@ -18,5 +19,4 @@ public class AddressDTO {
     private String province;
     private String locality;
     private String postal;
-    private Long userId;
 }
