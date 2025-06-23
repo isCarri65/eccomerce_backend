@@ -18,10 +18,8 @@ import java.util.Set;
 @Builder
 public class Category extends Base{
     private String name;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_gallery")
-    private Gallery gallery;
+    private String imageUrl;
+    private String publicId;
 
     @ManyToMany
     @JoinTable(name = "category_type", joinColumns = @JoinColumn(name = "id_category"), inverseJoinColumns = @JoinColumn(name = "id_type"))

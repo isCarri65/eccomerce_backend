@@ -6,9 +6,11 @@ import com.ecommerce.dto.RegisterRequest;
 import com.ecommerce.dto.User.UserDTO;
 import com.ecommerce.entities.Role;
 import com.ecommerce.entities.User;
-import com.ecommerce.mappers.UserMapper;
+import com.ecommerce.mappers.UserProfileMapper;
 import com.ecommerce.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,16 +27,16 @@ public class AuthService {
     private final JwtService jWTService;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtResponse login(LoginRequest request){
+    public JwtResponse login(LoginRequest request) throws EntityNotFoundException {
        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
        if(optionalUser.isEmpty()){
-           throw new RuntimeException("User not found");
+           throw new EntityNotFoundException("User not found");
        } else {
-           UserDTO user = UserMapper.toDTO(optionalUser.get());
+           UserDTO user = UserProfileMapper.toDTO(optionalUser.get());
            UserDetails userDetails = optionalUser.get();
-           user.setRole(optionalUser.get().getRole());
+           user.setRole(optionalUser.get().getRole().name());
 
            String token = jWTService.getToken(userDetails);
 
@@ -42,7 +44,10 @@ public class AuthService {
        }
 
     }
-    public JwtResponse register(RegisterRequest request){
+    public JwtResponse register(RegisterRequest request) throws DataIntegrityViolationException {
+        if(userRepository.existsByEmail(request.getEmail())){
+            throw new DataIntegrityViolationException("Este email ya existe");
+        }
         User user = User.builder()
                 .name(request.getName())
                 .lastName(request.getLastName())
@@ -51,13 +56,13 @@ public class AuthService {
                 .birthDate(request.getBirthDate())
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+       User userCreate = userRepository.save(user);
 
-        UserDTO userDTO = UserMapper.toDTO(user);
-        userDTO.setRole(user.getRole());
+        UserDTO userDTO = UserProfileMapper.toDTO(userCreate);
+        userDTO.setRole(user.getRole().name());
 
 
-        String token = jWTService.getToken(user);
+        String token = jWTService.getToken(userCreate);
 
         return JwtResponse.builder()
                 .token(token)

@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProductDiscount extends Base{
 
-    private Boolean state;
+    private boolean state = true;
     @ManyToOne
     @JoinColumn(name = "id_product")
     private Product product;
 
     @ManyToOne
     @JoinColumn(name = "id_discount")
-    private Discount discount;
+    private DiscountRule discount;
 }

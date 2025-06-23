@@ -1,14 +1,17 @@
 package com.ecommerce.mappers;
 
+import com.ecommerce.dto.Address.AddressAdminDTO;
 import com.ecommerce.dto.Address.AddressDTO;
 import com.ecommerce.dto.Address.CreateAddressDTO;
 import com.ecommerce.dto.Address.UpdateAddressDTO;
-import com.ecommerce.dto.User.UserDTO;
 import com.ecommerce.entities.Address;
 import com.ecommerce.entities.User;
+import org.springframework.stereotype.Component;
 
-public class AddressMapper {
-    public static AddressDTO toDTO(Address address) {
+@Component
+public class AddressMapper implements BaseAdminMapper<Address, Long, AddressDTO, CreateAddressDTO, UpdateAddressDTO> {
+    @Override
+    public  AddressDTO toDTO(Address address) {
         AddressDTO dto = new AddressDTO();
         dto.setApartment(address.getApartment());
         dto.setLocality(address.getLocality());
@@ -16,12 +19,12 @@ public class AddressMapper {
         dto.setStreet(address.getStreet());
         dto.setPostal(address.getPostal());
         dto.setProvince(address.getProvince());
-        dto.setUserId(address.getUser().getId());
         dto.setAptNumberAndFloor(address.getAptNumberAndFloor());
         return dto;
     }
-
-    public static void updateDTOtoAddress (UpdateAddressDTO updateDTO, Address address){
+    @Override
+    public Address UDTOtoEntity (UpdateAddressDTO updateDTO, Long id){
+        Address address = new Address();
         address.setProvince(updateDTO.getProvince());
         address.setLocality(updateDTO.getLocality());
         address.setNumber(updateDTO.getNumber());
@@ -29,9 +32,10 @@ public class AddressMapper {
         address.setPostal(updateDTO.getPostal());
         address.setAptNumberAndFloor(updateDTO.getAptNumberAndFloor());
         address.setApartment(updateDTO.getApartment());
+        return address;
     }
-
-    public static Address createDTOtoAddress(CreateAddressDTO addressDTO) {
+    @Override
+    public Address CDTOtoEntity(CreateAddressDTO addressDTO) {
         Address address = new Address();
         User user = new User();
         user.setId(addressDTO.getUserId());

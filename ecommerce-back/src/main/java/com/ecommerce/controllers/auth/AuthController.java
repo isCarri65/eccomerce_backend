@@ -5,6 +5,7 @@ import com.ecommerce.dto.RegisterRequest;
 import com.ecommerce.dto.JwtResponse;
 import com.ecommerce.services.auth.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) throws DataIntegrityViolationException {
 
         return ResponseEntity.ok(authService.register(request));
     }

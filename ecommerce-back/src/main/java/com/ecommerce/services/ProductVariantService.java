@@ -6,7 +6,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProductVariantService extends BaseService<ProductVariant, Long> {
-    public ProductVariantService(ProductVariantRepository productVariantRepository) {
+    private final ProductVariantRepository productVariantRepository;
+
+    public ProductVariantService( ProductVariantRepository productVariantRepository) {
         super(productVariantRepository);
+        this.productVariantRepository = productVariantRepository;
+    }
+    public Boolean hasStockAvalibleByProducId(Long id) {
+        return productVariantRepository.existsByProductIdAndQuantityGreaterThanAndStateTrue(id, 0);
     }
 }

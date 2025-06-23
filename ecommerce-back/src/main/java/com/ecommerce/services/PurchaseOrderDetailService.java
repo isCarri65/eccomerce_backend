@@ -21,7 +21,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
         this.purchaseOrderDetailRepository = purchaseOrderDetailRepository;
         this.purchaseOrderRepository = purchaseOrderRepository;
     }
-    public List<PurchaseOrderDetail> getAllByOrderId(Long id, Long userId) throws AccessDeniedException {
+    public List<PurchaseOrderDetail> getAllByOrderIdAndUserId(Long id, Long userId) throws AccessDeniedException {
         PurchaseOrder order = purchaseOrderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("PurchaseOrder not found"));
         if (!order.getUser().getId().equals(userId)){
             throw new AccessDeniedException("La orden no le pertenece al usuario");
