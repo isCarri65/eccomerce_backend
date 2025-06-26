@@ -1,5 +1,8 @@
 package com.ecommerce.dto.Address;
 
+import com.ecommerce.entities.Address;
+import com.ecommerce.mappers.AddressAdminMapper;
+import com.ecommerce.mappers.BaseAdminMapper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -9,11 +12,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateAddressDTO {
-
+@Builder
+public class UpdateAddressAdminDTO{
     @NotBlank(message = "La calle es obligatoria")
     private String street;
 
@@ -35,7 +37,9 @@ public class CreateAddressDTO {
     @NotBlank(message = "El código postal es obligatorio")
     private String postal;
 
+    @NotNull(message = "El id de usuario es obligatorio")
     private Long userId;
 
+    @NotNull
+    private boolean deleted;
 }
-

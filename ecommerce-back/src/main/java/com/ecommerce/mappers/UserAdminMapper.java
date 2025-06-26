@@ -25,12 +25,14 @@ public class UserAdminMapper implements BaseAdminMapper<User, Long, UserAdminDTO
 
     public User UDTOtoEntity(UpdateUserAdminDTO dto, Long userId) {
         User user = new User();
+        user.setId(userId);
         user.setBirthDate(dto.getBirthDate());
         user.setLastName(dto.getLastName());
         user.setName(dto.getName());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setEnabled(dto.isEnabled());
         user.setDeleted(dto.isDeleted());
+
         try {
             user.setRole(Role.valueOf(dto.getRole().toUpperCase()));
         } catch (IllegalArgumentException | NullPointerException e) {

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,19 +32,19 @@ public class AddressProtectedController {
 
 
     @GetMapping("/getAll")
-    public ResponseEntity<Set<AddressDTO>> getAll() {
+    public ResponseEntity<List<AddressDTO>> getAll() {
         User user = userService.getCurrentUser();
-        Set<Address> addresses = addressService.getAllByUserId(user.getId());
-        Set<AddressDTO> addressesDTO = addresses.stream()
+        List<Address> addresses = addressService.getAllByUserId(user.getId());
+        List<AddressDTO> addressesDTO = addresses.stream()
                 .map(addressMapper::toDTO)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         return ResponseEntity.ok(addressesDTO);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<AddressDTO> updateMyAddress(@RequestBody UpdateAddressDTO addressDTO, @PathVariable Long id) throws Exception {
-        String email = userService.getCurrentEmail();
-        return ResponseEntity.ok(addressService.updateWhitDTO(id, addressDTO, email));
+        User user = userService.getCurrentUser();
+        return ResponseEntity.ok(addressService.updateWhitDTO(id, addressDTO, user.getId()));
     }
 
     @PostMapping("/create")

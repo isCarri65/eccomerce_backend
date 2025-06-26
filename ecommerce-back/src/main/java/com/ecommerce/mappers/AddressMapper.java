@@ -13,6 +13,7 @@ public class AddressMapper implements BaseAdminMapper<Address, Long, AddressDTO,
     @Override
     public  AddressDTO toDTO(Address address) {
         AddressDTO dto = new AddressDTO();
+        dto.setId(address.getId());
         dto.setApartment(address.getApartment());
         dto.setLocality(address.getLocality());
         dto.setNumber(address.getNumber());
@@ -25,6 +26,7 @@ public class AddressMapper implements BaseAdminMapper<Address, Long, AddressDTO,
     @Override
     public Address UDTOtoEntity (UpdateAddressDTO updateDTO, Long id){
         Address address = new Address();
+        address.setId(id);
         address.setProvince(updateDTO.getProvince());
         address.setLocality(updateDTO.getLocality());
         address.setNumber(updateDTO.getNumber());
@@ -39,6 +41,7 @@ public class AddressMapper implements BaseAdminMapper<Address, Long, AddressDTO,
         Address address = new Address();
         User user = new User();
         user.setId(addressDTO.getUserId());
+        address.setAptNumberAndFloor(addressDTO.getAptNumberAndFloor());
         address.setApartment(addressDTO.getApartment());
         address.setLocality(addressDTO.getLocality());
         address.setNumber(addressDTO.getNumber());
