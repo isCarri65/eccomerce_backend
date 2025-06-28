@@ -3,14 +3,14 @@ package com.ecommerce.controllers.publicControllers;
 
 import com.ecommerce.dto.Product.ProductDTO;
 import com.ecommerce.dto.Product.ProductListDTO;
+import com.ecommerce.dto.ProductFilterDTO;
 import com.ecommerce.entities.Product;
 import com.ecommerce.services.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -35,6 +35,15 @@ public class ProductPublicController {
         return ResponseEntity.ok(service.getAll().stream()
             .map(service::getProductListDTO)
             .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ProductListDTO>> getFilteredProducts(
+            @ModelAttribute ProductFilterDTO filter,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(service.getFilteredProducts(filter, pageable)
+                .map(service::getProductListDTO));
     }
 
 }

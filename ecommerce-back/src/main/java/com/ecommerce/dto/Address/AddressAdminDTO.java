@@ -18,7 +18,7 @@ public class AddressAdminDTO {
     private String province;
     private String locality;
     private String postal;
-    private Boolean deleted;
+    private boolean deleted;
     private Long userId;
 }
 

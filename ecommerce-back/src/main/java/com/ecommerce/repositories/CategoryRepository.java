@@ -10,5 +10,5 @@ import java.util.Set;
 public interface CategoryRepository extends BaseRepository<Category, Long>{
 
     Set<Category> getAllByIdIn(Set<Long> ids);
-    List<Category> findByTypes_IdAndDeleted(Long typeId, boolean deleted);
+    List<Category> findByTypeIdAndDeleted(Long typeId, boolean deleted);
 }

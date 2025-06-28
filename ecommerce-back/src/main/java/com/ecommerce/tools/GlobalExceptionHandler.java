@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDuplicateKey(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Error: El email ya está registrado.");
+                .body("Error con un atributo de valor incorrecto: " + ex.getMessage());
     }
 
     //Extension no valida

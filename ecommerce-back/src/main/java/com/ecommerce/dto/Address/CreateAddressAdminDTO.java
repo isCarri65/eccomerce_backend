@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateAddressDTO {
+public class CreateAddressAdminDTO {
 
     @NotBlank(message = "La calle es obligatoria")
     private String street;
@@ -35,7 +35,6 @@ public class CreateAddressDTO {
     @NotBlank(message = "El código postal es obligatorio")
     private String postal;
 
+    @NotNull(message = "El id de usuario es obligatorio")
     private Long userId;
-
 }
-

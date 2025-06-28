@@ -1,17 +1,16 @@
 package com.ecommerce.mappers;
 
-import com.ecommerce.dto.Address.AddressAdminDTO;
-import com.ecommerce.dto.Address.CreateAddressDTO;
-import com.ecommerce.dto.Address.UpdateAddressDTO;
+import com.ecommerce.dto.Address.*;
 import com.ecommerce.entities.Address;
 import com.ecommerce.entities.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AddressAdminMapper implements BaseAdminMapper<Address, Long, AddressAdminDTO, CreateAddressDTO, UpdateAddressDTO> {
+public class AddressAdminMapper implements BaseAdminMapper<Address, AddressAdminDTO, CreateAddressAdminDTO, UpdateAddressAdminDTO> {
     @Override
     public  AddressAdminDTO toDTO(Address address) {
         AddressAdminDTO dto = new AddressAdminDTO();
+        dto.setId(address.getId());
         dto.setDeleted(address.isDeleted());
         dto.setApartment(address.getApartment());
         dto.setLocality(address.getLocality());
@@ -24,12 +23,11 @@ public class AddressAdminMapper implements BaseAdminMapper<Address, Long, Addres
         return dto;
     }
     @Override
-    public Address UDTOtoEntity (UpdateAddressDTO updateDTO, Long id){
-        Address address = new Address();
+    public void UDTOtoEntity (UpdateAddressAdminDTO updateDTO, Address address) {
+
         User user = new User();
         user.setId(updateDTO.getUserId());
         address.setUser(user);
-        address.setId(id);
         address.setProvince(updateDTO.getProvince());
         address.setLocality(updateDTO.getLocality());
         address.setNumber(updateDTO.getNumber());
@@ -37,11 +35,11 @@ public class AddressAdminMapper implements BaseAdminMapper<Address, Long, Addres
         address.setPostal(updateDTO.getPostal());
         address.setAptNumberAndFloor(updateDTO.getAptNumberAndFloor());
         address.setApartment(updateDTO.getApartment());
-        address.setDeleted(updateDTO.getDeleted());
-        return address;
+        address.setDeleted(updateDTO.isDeleted());
+
     }
     @Override
-    public Address CDTOtoEntity(CreateAddressDTO addressDTO) {
+    public Address CDTOtoEntity(CreateAddressAdminDTO addressDTO) {
         Address address = new Address();
         User user = new User();
         user.setId(addressDTO.getUserId());
@@ -51,6 +49,7 @@ public class AddressAdminMapper implements BaseAdminMapper<Address, Long, Addres
         address.setStreet(addressDTO.getStreet());
         address.setPostal(addressDTO.getPostal());
         address.setProvince(addressDTO.getProvince());
+        address.setAptNumberAndFloor(addressDTO.getAptNumberAndFloor());
         address.setUser(user);
         return address;
     }

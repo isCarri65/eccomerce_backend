@@ -21,6 +21,7 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         this.baseRepository = baseRepository;
     }
 
+
     public List<E> getAll() {
         return baseRepository.findAll();
     }
@@ -51,6 +52,7 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         if (!baseRepository.existsById(id)) {
             throw new EntityNotFoundException("Entidad no encontrada para actualizar");
         }
+        entity.setId((Long) id);
         return baseRepository.save(entity);
     }
 
@@ -79,8 +81,9 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
 
     //Metodos personalizados para para recibir y devolver los dtos correspondientes
 
-
+    @Transactional
     public <EntityDTO> List<EntityDTO> getAll(Function<E, EntityDTO> mapper) {
+        System.out.println("service getAll");
         return baseRepository.findAll().stream().map(mapper).collect(Collectors.toList());
     }
 
@@ -103,19 +106,20 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
 
 
     @Transactional
-    public <EntityDTO, CreateDTO, UpdateDTO> EntityDTO create(CreateDTO dto, BaseAdminMapper<E, ID, EntityDTO, CreateDTO, UpdateDTO> mapper) {
+    public <EntityDTO, CreateDTO, UpdateDTO> EntityDTO create(CreateDTO dto, BaseAdminMapper<E, EntityDTO, CreateDTO, UpdateDTO> mapper) {
         E entity = mapper.CDTOtoEntity(dto);
-        return mapper.toDTO(baseRepository.save(entity));
+        E entityCreated = baseRepository.save(entity);
+        return mapper.toDTO(entityCreated);
     }
-
     @Transactional
-    public <EntityDTO, CreateDTO, UpdateDTO> EntityDTO update(ID id, UpdateDTO dto, BaseAdminMapper<E, ID, EntityDTO, CreateDTO, UpdateDTO> mapper) {
-        if (!baseRepository.existsById(id)) {
-            throw new EntityNotFoundException("Entidad no encontrada para actualizar");
-        }
-        E entity = mapper.UDTOtoEntity(dto, id);
+    public <EntityDTO, CreateDTO, UpdateDTO> EntityDTO update(ID id, UpdateDTO dto, BaseAdminMapper<E, EntityDTO, CreateDTO, UpdateDTO> mapper) {
+        E entity = baseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Entidad no encontrada para actualizar"));
+
+        //actualizamos la entidad
+        mapper.UDTOtoEntity(dto, entity);
+
         return mapper.toDTO(baseRepository.save(entity));
     }
-
 
 }

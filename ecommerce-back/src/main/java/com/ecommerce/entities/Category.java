@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,8 +22,15 @@ public class Category extends Base{
     private String imageUrl;
     private String publicId;
 
-    @ManyToMany
-    @JoinTable(name = "category_type", joinColumns = @JoinColumn(name = "id_category"), inverseJoinColumns = @JoinColumn(name = "id_type"))
-    private Set<Type> types = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private Type type;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Category)) return false;
+        Category other = (Category) o;
+        return this.getId() != null && this.getId().equals(other.getId());
+    }
 }

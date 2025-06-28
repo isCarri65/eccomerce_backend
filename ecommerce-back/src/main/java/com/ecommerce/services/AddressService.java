@@ -10,30 +10,34 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class AddressService extends BaseService<Address, Long>{
-    private AddressRepository addressRepository;
-    private AddressMapper addressMapper;
+    private final AddressRepository addressRepository;
+    private final AddressMapper addressMapper;
     public AddressService(AddressRepository addressRepository, AddressMapper addressMapper) {
         super(addressRepository);
         this.addressMapper = addressMapper;
+        this.addressRepository = addressRepository;
     }
 
-    public Set<Address> getAllByUserId(Long userId){
+    public List<Address> getAllByUserId(Long userId){
         return  addressRepository.findAllByUser_Id(userId);
     }
 
 
-    public AddressDTO updateWhitDTO (Long addressId, UpdateAddressDTO addressDTO, String email) throws AccessDeniedException {
+    public AddressDTO updateWhitDTO (Long addressId, UpdateAddressDTO addressDTO, Long userId) throws AccessDeniedException {
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new EntityNotFoundException("No se encontró la dirección con ID: " + addressId));
-        if (!email.equals(address.getUser().getEmail())){
+        if (!userId.equals(address.getUser().getId())){
             throw new AccessDeniedException("no tienes acceso a esta direccion");
         }
-        Address updatedAddress = addressRepository.save(addressMapper.UDTOtoEntity(addressDTO, addressId));
-        return addressMapper.toDTO(updatedAddress);
+        addressDTO.setUserId(userId);
+        addressMapper.UDTOtoEntity(addressDTO, address);
+        addressRepository.save(address);
+        return addressMapper.toDTO(address);
     }
 
     public AddressDTO createWhitDTO (CreateAddressDTO addressDTO, Long userId) {

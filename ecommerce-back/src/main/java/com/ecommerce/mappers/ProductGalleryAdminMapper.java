@@ -8,7 +8,7 @@ import com.ecommerce.entities.ProductGallery;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductGalleryAdminMapper implements BaseAdminMapper<ProductGallery, Long, ProductGalleryAdminDTO, CreateProductGalleryDTO, UpdateProductGalleryDTO> {
+public class ProductGalleryAdminMapper implements BaseAdminMapper<ProductGallery, ProductGalleryAdminDTO, CreateProductGalleryDTO, UpdateProductGalleryDTO> {
     public ProductGalleryAdminDTO toDTO(ProductGallery productGallery) {
         ProductGalleryAdminDTO dto = new ProductGalleryAdminDTO();
         dto.setPublicId(productGallery.getPublicId());
@@ -32,13 +32,10 @@ public class ProductGalleryAdminMapper implements BaseAdminMapper<ProductGallery
         return productGallery;
     }
 
-    public ProductGallery UDTOtoEntity(UpdateProductGalleryDTO productGalleryDTO, Long id) {
-        ProductGallery productGallery = new ProductGallery();
-        productGallery.setId(id);
+    public void UDTOtoEntity(UpdateProductGalleryDTO productGalleryDTO, ProductGallery productGallery) {
         productGallery.setImageUrl(productGalleryDTO.getImageUrl());
         productGallery.setIsMain(productGalleryDTO.getIsMain());
         productGallery.setDeleted(productGalleryDTO.isDeleted());
         productGallery.setPublicId(productGalleryDTO.getPublicId());
-        return productGallery;
     }
 }

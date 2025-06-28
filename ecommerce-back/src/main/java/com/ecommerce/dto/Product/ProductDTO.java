@@ -3,9 +3,12 @@ package com.ecommerce.dto.Product;
 // ProductDTO.java (for frontend)
 import com.ecommerce.dto.Category.CategoryDTO;
 import com.ecommerce.dto.ProductGallery.ProductGalleryDTO;
+import com.ecommerce.dto.productVariant.ProductVariantDTO;
+import com.ecommerce.entities.ProductVariant;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -20,5 +23,6 @@ public class ProductDTO {
     private boolean stockAvailable;
     private Set<CategoryDTO> categories; // Full category objects for the frontend
     private Set<ProductGalleryDTO> productGalleries;
+    private List<ProductVariantDTO> productVariants;
 
 }

@@ -2,12 +2,14 @@ package com.ecommerce.dto.Product;
 
 import com.ecommerce.dto.Category.CategoryDTO;
 import com.ecommerce.dto.ProductGallery.ProductGalleryDTO;
+import com.ecommerce.dto.productVariant.ProductVariantDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,5 +26,6 @@ public class ProductAdminDTO {
     private String genre;
     private Set<CategoryDTO> categories;
     private Set<ProductGalleryDTO> productGalleries;
+    private List<ProductVariantDTO> productVariants;
     private boolean deleted;
 }

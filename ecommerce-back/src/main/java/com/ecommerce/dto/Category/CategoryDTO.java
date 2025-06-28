@@ -22,5 +22,5 @@ public class CategoryDTO {
     private String name;
     private String imageUrl;
 
-    private List<TypeDTO> types;
+    private TypeDTO type;
 }
