@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,5 +22,5 @@ public class UpdateProductDTO {
     private Boolean state;
     private boolean deleted;
     private String genre;
-    private Set<Long> categoryIds;
+    private List<Long> categoryIds;
 }

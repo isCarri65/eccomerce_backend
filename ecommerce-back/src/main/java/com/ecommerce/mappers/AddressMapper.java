@@ -1,6 +1,5 @@
 package com.ecommerce.mappers;
 
-import com.ecommerce.dto.Address.AddressAdminDTO;
 import com.ecommerce.dto.Address.AddressDTO;
 import com.ecommerce.dto.Address.CreateAddressDTO;
 import com.ecommerce.dto.Address.UpdateAddressDTO;
@@ -9,7 +8,7 @@ import com.ecommerce.entities.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AddressMapper implements BaseAdminMapper<Address, Long, AddressDTO, CreateAddressDTO, UpdateAddressDTO> {
+public class AddressMapper implements BaseAdminMapper<Address, AddressDTO, CreateAddressDTO, UpdateAddressDTO> {
     @Override
     public  AddressDTO toDTO(Address address) {
         AddressDTO dto = new AddressDTO();
@@ -24,9 +23,7 @@ public class AddressMapper implements BaseAdminMapper<Address, Long, AddressDTO,
         return dto;
     }
     @Override
-    public Address UDTOtoEntity (UpdateAddressDTO updateDTO, Long id){
-        Address address = new Address();
-        address.setId(id);
+    public void UDTOtoEntity (UpdateAddressDTO updateDTO, Address address){
         address.setProvince(updateDTO.getProvince());
         address.setLocality(updateDTO.getLocality());
         address.setNumber(updateDTO.getNumber());
@@ -34,7 +31,7 @@ public class AddressMapper implements BaseAdminMapper<Address, Long, AddressDTO,
         address.setPostal(updateDTO.getPostal());
         address.setAptNumberAndFloor(updateDTO.getAptNumberAndFloor());
         address.setApartment(updateDTO.getApartment());
-        return address;
+
     }
     @Override
     public Address CDTOtoEntity(CreateAddressDTO addressDTO) {

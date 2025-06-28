@@ -1,4 +1,4 @@
-package com.ecommerce.dto.Category;
+package com.ecommerce.dto.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateCategoryDTO {
+public class SizeDTO {
+    private Long id;
     private String name;
-    private String imageUrl;
-    private String publicId;
-    private boolean deleted;
-
-    private Long typeId;
+    private String sizeType;
 }

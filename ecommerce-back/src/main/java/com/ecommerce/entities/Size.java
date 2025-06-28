@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @Builder
 public class Size extends Base{
-    private String name;
+    private String value;
 
     @Enumerated(EnumType.STRING)
     private SizeTypeENUM sizeType;

@@ -18,5 +18,5 @@ public class CreateCategoryDTO {
     private String imageUrl;
     private String publicId;
 
-    private List<Long> typeIds;
+    private Long typeId;
 }

@@ -1,5 +1,7 @@
 package com.ecommerce.dto.productVariant;
 
+import com.ecommerce.dto.Color.ColorDTO;
+import com.ecommerce.dto.Size.SizeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +17,6 @@ public class ProductVariantAdminDTO {
     private Boolean state;
     private boolean deleted;
     private Long productId;
-    private Long sizeId;
-    private Long colorId;
+    private SizeDTO size;
+    private ColorDTO color;
 }

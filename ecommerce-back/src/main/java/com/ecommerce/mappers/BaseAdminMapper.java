@@ -1,7 +1,7 @@
 package com.ecommerce.mappers;
 
-public interface BaseAdminMapper<E, ID, EntityDTO, CreateDTO, UpdateDTO> {
+public interface BaseAdminMapper<E, EntityDTO, CreateDTO, UpdateDTO> {
     E CDTOtoEntity (CreateDTO createDTO);
-    E UDTOtoEntity (UpdateDTO updateDTO, ID id);
+    void UDTOtoEntity (UpdateDTO updateDTO, E entity);
     EntityDTO toDTO (E entity);
 }

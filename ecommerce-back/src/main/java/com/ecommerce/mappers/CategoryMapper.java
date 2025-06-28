@@ -16,8 +16,9 @@ public class CategoryMapper implements BaseMapper<Category, CategoryDTO> {
         dto.setId(category.getId());
         dto.setName(category.getName());
         dto.setImageUrl(category.getImageUrl());
-        dto.setTypes(category.getTypes().stream().map(typeMapper::toDTO).collect(Collectors.toList()));
-
+        if (category.getType() != null) {
+            dto.setType(typeMapper.toDTO(category.getType()));
+        }
         return dto;
 
     }

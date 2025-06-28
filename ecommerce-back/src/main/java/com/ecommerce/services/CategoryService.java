@@ -20,7 +20,7 @@ public class CategoryService extends BaseService<Category, Long>{
     }
 
     public List<CategoryDTO> getAllByTypeId(Long typeId){
-        return categoryRepository.findByTypes_IdAndDeleted(typeId, false).stream().map(categoryMapper::toDTO).collect(Collectors.toList());
+        return categoryRepository.findByTypeIdAndDeleted(typeId, false).stream().map(categoryMapper::toDTO).collect(Collectors.toList());
     }
     public Set<Category> findAllByListId(Set<Long> ids){
         return categoryRepository.getAllByIdIn(ids);

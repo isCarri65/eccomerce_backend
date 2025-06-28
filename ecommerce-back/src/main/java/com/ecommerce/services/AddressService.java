@@ -35,8 +35,9 @@ public class AddressService extends BaseService<Address, Long>{
             throw new AccessDeniedException("no tienes acceso a esta direccion");
         }
         addressDTO.setUserId(userId);
-        Address updatedAddress = addressRepository.save(addressMapper.UDTOtoEntity(addressDTO, addressId));
-        return addressMapper.toDTO(updatedAddress);
+        addressMapper.UDTOtoEntity(addressDTO, address);
+        addressRepository.save(address);
+        return addressMapper.toDTO(address);
     }
 
     public AddressDTO createWhitDTO (CreateAddressDTO addressDTO, Long userId) {

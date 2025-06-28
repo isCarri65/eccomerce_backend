@@ -17,6 +17,6 @@ public class CreateProductDTO {
     private String description;
     private Boolean state;
     private String genre; // Enum as String
-    private Set<Long> categories; // IDs of categories
+    private List<Long> categories; // IDs of categories
     private List<CreateProductGalleryDTO> productGalleries;
 }

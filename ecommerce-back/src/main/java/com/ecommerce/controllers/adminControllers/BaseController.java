@@ -17,9 +17,9 @@ public abstract class BaseController<
         UpdateDTO> {
 
     protected final BaseService<E, ID> service;
-    protected final BaseAdminMapper<E, ID, EntityDTO, CreateDTO, UpdateDTO> mapper;
+    protected final BaseAdminMapper<E, EntityDTO, CreateDTO, UpdateDTO> mapper;
 
-    public BaseController(BaseService<E, ID> service, BaseAdminMapper<E, ID, EntityDTO, CreateDTO, UpdateDTO> mapper){
+    public BaseController(BaseService<E, ID> service, BaseAdminMapper<E, EntityDTO, CreateDTO, UpdateDTO> mapper){
         this.service = service;
         this.mapper = mapper;
     }

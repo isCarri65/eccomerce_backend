@@ -25,6 +25,11 @@ public class ProductController extends BaseController<Product, Long, ProductAdmi
     public ResponseEntity<ProductAdminDTO> createProductWhitGalleries(@RequestBody CreateProductDTO dto){
         return ResponseEntity.ok(productService.createProductWhitGalleries(dto));
     }
+    /*
+    @PostMapping("/create")
+    public ResponseEntity<ProductAdminDTO> createProduct(@RequestBody CreateProductDTO dto){
+        return ResponseEntity.ok(productService.creteProduct(dto));
+    }*/
 
 
 }

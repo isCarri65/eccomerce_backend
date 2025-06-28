@@ -5,19 +5,21 @@ import com.ecommerce.dto.Product.ProductAdminDTO;
 
 import com.ecommerce.dto.Product.ProductDTO;
 import com.ecommerce.dto.Product.ProductListDTO;
+import com.ecommerce.dto.ProductFilterDTO;
 import com.ecommerce.dto.ProductGallery.CreateProductGalleryDTO;
 import com.ecommerce.entities.DiscountRule;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.ProductGallery;
-import com.ecommerce.mappers.ProductAdminMapper;
-import com.ecommerce.mappers.ProductGalleryAdminMapper;
+import com.ecommerce.mappers.*;
 
-import com.ecommerce.mappers.ProductGalleryMapper;
-import com.ecommerce.mappers.ProductMapper;
-import com.ecommerce.repositories.ProductGalleryRepository;
+
 import com.ecommerce.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,31 +30,36 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class ProductService extends BaseService<Product, Long>{
+public class ProductService extends BaseService<Product, Long> {
     private final ProductRepository productRepository;
     private final ProductAdminMapper productAdminMapper;
     private final DiscountService discountService;
     private final ProductMapper productMapper;
     private final ProductGalleryService productGalleryService;
-    private final ProductVariantService productVariantService;
+
+    private final CategoryMapper categoryMapper;
 
     public ProductService(ProductRepository productRepository,
                           ProductAdminMapper productAdminMapper,
                           DiscountService discountService,
                           ProductMapper productMapper,
                           ProductGalleryService productGalleryService,
-                          ProductVariantService productVariantService) {
+                          CategoryMapper categoryMapper) {
         super(productRepository);
         this.productRepository = productRepository;
         this.productAdminMapper = productAdminMapper;
         this.discountService = discountService;
         this.productMapper = productMapper;
         this.productGalleryService = productGalleryService;
-        this.productVariantService = productVariantService;
+        this.categoryMapper = categoryMapper;
     }
 
-    public ProductDTO getProductPublicById(Long productId){
-        Product product = productRepository.findById(productId).orElseThrow(()-> new EntityNotFoundException("Product not found"));
+    @Transactional(readOnly = true)
+    public ProductDTO getProductPublicById(Long productId) {
+
+
+        Product product = productRepository.safeFindByIdWithVariants(productId).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        System.out.println(product.getProductVariants().size());
         List<ProductGallery> galleries = productGalleryService.getAllByProductId(productId);
         ProductDTO productDTO = productMapper.toDTO(product);
         productDTO.setProductGalleries(productGalleryService.listEntityToDTO(galleries));
@@ -68,14 +75,23 @@ public class ProductService extends BaseService<Product, Long>{
         productGalleryService.createEntitiesWhitDTOS(productGalleryDTOS);
         return productAdminMapper.toDTO(product);
     }
+/*
+    @Transactional
+    public ProductAdminDTO createProduct(CreateProductDTO createProductDTO) {
+        Product product =productAdminMapper.CDTOtoEntity(createProductDTO);
+        return product;
+    }*/
 
+    @Transactional
     public ProductListDTO getProductListDTO(Product product) {
         ProductListDTO dto = new ProductListDTO();
         dto.setId(product.getId());
         dto.setName(product.getName());
         dto.setDescription(product.getDescription());
         dto.setGenre(String.valueOf(product.getGenre()));
-        dto.setStockAvailable(productVariantService.hasStockAvalibleByProducId(product.getId()));
+        dto.setStockAvailable(product.getTotalStock() > 0);
+
+        dto.setCategories(product.getCategories().stream().map(categoryMapper::toDTO).collect(Collectors.toSet()));
 
         Optional<ProductGallery> productGallery = productGalleryService.findProductGalleryMainByProductId(product.getId());
         productGallery.ifPresent(gallery -> dto.setImageUrl(gallery.getImageUrl()));
@@ -97,6 +113,28 @@ public class ProductService extends BaseService<Product, Long>{
 
         return dto;
     }
-    // En ProductService:
 
+
+    public Page<Product> getFilteredProducts(ProductFilterDTO filter, Pageable pageable) {
+        List<Long> categoryIds = filter.getCategoryIds();
+
+        // Limitar la cantidad de categorías a 3 si se pasa más
+        if (categoryIds != null && categoryIds.size() > 3) {
+            categoryIds = categoryIds.subList(0, 3);
+        }
+
+        return productRepository.findFilteredProducts(
+                filter.getGenre(),
+                filter.getMinPrice(),
+                filter.getMaxPrice(),
+                filter.getSizeId(),
+                filter.getColorId(),
+                categoryIds,
+                categoryIds != null ? categoryIds.size() : 0L,
+                filter.getTypeId(),
+                pageable
+        );
+        // En ProductService:
+
+    }
 }

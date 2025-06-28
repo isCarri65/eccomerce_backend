@@ -5,12 +5,13 @@ import com.ecommerce.dto.Category.CreateCategoryDTO;
 import com.ecommerce.dto.Category.UpdateCategoryDTO;
 import com.ecommerce.entities.Category;
 import com.ecommerce.entities.Type;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
 @Component
-public class CategoryAdminMapper implements BaseAdminMapper<Category, Long, CategoryAdminDTO, CreateCategoryDTO, UpdateCategoryDTO> {
+@RequiredArgsConstructor
+public class CategoryAdminMapper implements BaseAdminMapper<Category, CategoryAdminDTO, CreateCategoryDTO, UpdateCategoryDTO> {
+    private final TypeMapper typeMapper;
     @Override
     public CategoryAdminDTO toDTO(Category category) {
 
@@ -20,20 +21,21 @@ public class CategoryAdminMapper implements BaseAdminMapper<Category, Long, Cate
         dto.setName(category.getName());
         dto.setImageUrl(category.getImageUrl());
         dto.setPublicId(category.getPublicId());
-        dto.setTypes(category.getTypes().stream().toList());
-
+        if (category.getType() != null) {
+            dto.setType(typeMapper.toDTO(category.getType()));
+        }
         return dto;
 
     }
     @Override
-    public Category UDTOtoEntity (UpdateCategoryDTO updateDTO, Long id){
-        Category category = new Category();
-        category.setId(id);
+    public void UDTOtoEntity (UpdateCategoryDTO updateDTO, Category category) {
         category.setName(updateDTO.getName());
         category.setImageUrl(updateDTO.getImageUrl());
         category.setPublicId(updateDTO.getPublicId());
         category.setDeleted(updateDTO.isDeleted());
-        return category;
+        Type type = new Type();
+        type.setId(updateDTO.getTypeId());
+        category.setType(type);
     }
     @Override
     public Category CDTOtoEntity(CreateCategoryDTO categoryDTO) {
@@ -41,6 +43,9 @@ public class CategoryAdminMapper implements BaseAdminMapper<Category, Long, Cate
         category.setName(categoryDTO.getName());
         category.setImageUrl(categoryDTO.getImageUrl());
         category.setPublicId(categoryDTO.getPublicId());
+        Type type = new Type();
+        type.setId(categoryDTO.getTypeId());
+        category.setType(type);
         return category;
     }
 }

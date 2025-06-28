@@ -1,6 +1,7 @@
 package com.ecommerce.dto.Category;
 
 import com.ecommerce.dto.Type.TypeAdminDTO;
+import com.ecommerce.dto.Type.TypeDTO;
 import com.ecommerce.entities.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,5 @@ public class CategoryAdminDTO {
     private String imageUrl;
     private String publicId;
     private boolean deleted;
-
-    private List<Type> types;
+    private TypeDTO type;
 }

@@ -4,21 +4,21 @@ import com.ecommerce.dto.Favorite.CreateFavoriteDTO;
 import com.ecommerce.dto.Favorite.FavoriteAdminDTO;
 import com.ecommerce.dto.Favorite.UpdateFavoriteDTO;
 import com.ecommerce.dto.Product.ProductDTO;
-import com.ecommerce.dto.User.UserDTO;
 import com.ecommerce.entities.Favorite;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Component
-public class FavoriteAdminMapper implements BaseAdminMapper<Favorite, Long, FavoriteAdminDTO, CreateFavoriteDTO, UpdateFavoriteDTO> {
-
+public class FavoriteAdminMapper implements BaseAdminMapper<Favorite, FavoriteAdminDTO, CreateFavoriteDTO, UpdateFavoriteDTO> {
+    private final ProductMapper productMapper;
     @Override
     public FavoriteAdminDTO toDTO(Favorite favorite) {
         FavoriteAdminDTO favoriteDTO = new FavoriteAdminDTO();
         favoriteDTO.setId(favorite.getId());
         favoriteDTO.setUserId(favorite.getUser().getId());
-        ProductMapper productMapper = new ProductMapper();
         ProductDTO productDTO = productMapper.toDTO(favorite.getProduct());
         favoriteDTO.setProduct(productDTO);
         return favoriteDTO;
@@ -39,9 +39,7 @@ public class FavoriteAdminMapper implements BaseAdminMapper<Favorite, Long, Favo
         return favorite;
     }
     @Override
-    public Favorite UDTOtoEntity(UpdateFavoriteDTO dto, Long favoriteId) {
-        Favorite favorite = new Favorite();
-        favorite.setId(favoriteId);
+    public void UDTOtoEntity(UpdateFavoriteDTO dto, Favorite favorite) {
         User user = new User();
         user.setId(dto.getUserId());
         Product product = new Product();
@@ -49,6 +47,5 @@ public class FavoriteAdminMapper implements BaseAdminMapper<Favorite, Long, Favo
 
         favorite.setUser(user);
         favorite.setProduct(product);
-        return favorite;
     }
 }

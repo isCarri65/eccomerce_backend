@@ -3,10 +3,7 @@ package com.ecommerce.entities;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,6 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
+@ToString(exclude = "product")
+
 public class ProductVariant extends Base {
 
     private Integer quantity;

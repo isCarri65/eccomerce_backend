@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class UserAdminMapper implements BaseAdminMapper<User, Long, UserAdminDTO, CreateUserAdminDTO, UpdateUserAdminDTO> {
+public class UserAdminMapper implements BaseAdminMapper<User, UserAdminDTO, CreateUserAdminDTO, UpdateUserAdminDTO> {
     PasswordEncoder passwordEncoder;
     public UserAdminDTO toDTO(User user) {
         UserAdminDTO dto = new UserAdminDTO();
@@ -23,9 +23,8 @@ public class UserAdminMapper implements BaseAdminMapper<User, Long, UserAdminDTO
         return dto;
     }
 
-    public User UDTOtoEntity(UpdateUserAdminDTO dto, Long userId) {
-        User user = new User();
-        user.setId(userId);
+    public void UDTOtoEntity(UpdateUserAdminDTO dto, User user) {
+
         user.setBirthDate(dto.getBirthDate());
         user.setLastName(dto.getLastName());
         user.setName(dto.getName());
@@ -38,8 +37,6 @@ public class UserAdminMapper implements BaseAdminMapper<User, Long, UserAdminDTO
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new InvalidRoleException("Invalid role: " + dto.getRole());
         }
-        // No modificar campos sensibles como password o roles
-        return user;
     }
 
     public User CDTOtoEntity(CreateUserAdminDTO dto) {
