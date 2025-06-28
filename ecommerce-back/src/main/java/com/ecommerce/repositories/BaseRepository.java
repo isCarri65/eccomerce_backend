@@ -5,9 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
+import java.util.Optional;
 import java.util.Set;
 
 @NoRepositoryBean
 public interface BaseRepository<E extends Base, ID extends Serializable> extends JpaRepository<E, ID> {
     Set<E> getAllByDeleted(boolean deleted);
+    Optional<E> findByIdAndDeleted(ID id, boolean deleted);
+
 }

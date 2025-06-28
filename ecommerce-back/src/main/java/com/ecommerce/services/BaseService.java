@@ -1,8 +1,7 @@
 package com.ecommerce.services;
 
 import com.ecommerce.entities.Base;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.ecommerce.entities.Product;
 import com.ecommerce.repositories.BaseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,28 +19,23 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         this.baseRepository = baseRepository;
     }
 
-    @Transactional
-    public List<E> getAll() throws Exception {
-        try {
-            return baseRepository.findAll();
-        }catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public List<E> getAll() {
+        return baseRepository.findAll();
     }
 
 
     public Set<E> getAllActives() {
         return baseRepository.getAllByDeleted(false);
     }
+    public Set<E> getAllDeleted() {
+        return baseRepository.getAllByDeleted(true);
+    }
 
-    @Transactional
-    public E findById(ID id) throws Exception {
-        try {
-            Optional<E> entityOptional = baseRepository.findById(id);
-            return entityOptional.get();
-        }catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public Optional<E> findById(ID id) {
+        return baseRepository.findById(id);
+    }
+    public Optional<E> findByIdActive(ID id) {
+        return baseRepository.findByIdAndDeleted(id, false);
     }
 
     @Transactional
@@ -49,28 +43,14 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
         return baseRepository.save(entity);
     }
 
-    @Transactional
-    public E save(E entity)throws Exception {
-        try {
-            entity = baseRepository.save(entity);
-            return entity;
-        }catch (Exception e) {
-            throw new Exception(e.getMessage());
+    public E update(ID id, E entity) throws Exception {
+        if (!baseRepository.existsById(id)) {
+            throw new EntityNotFoundException("Entidad no encontrada para actualizar");
         }
-    }
-
-    public E update(E entity) throws Exception {
-        try {
-            if (!baseRepository.existsById((ID) entity.getId())) {
-                throw new Exception("Entidad no encontrada para actualizar");
-            }
-            return baseRepository.save(entity);
-        }catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        return baseRepository.save(entity);
     }
     @Transactional
-    public void delete(ID id) throws Exception{
+    public void delete(ID id) {
         Optional<E> optionalEntity = baseRepository.findById(id);
         if (optionalEntity.isPresent()) {
             E entity = optionalEntity.get();
@@ -80,13 +60,15 @@ public abstract class BaseService<E extends Base, ID extends Serializable> {
             throw new EntityNotFoundException("No se encontró la entidad con id: " + id);
         }
     }
-    @Transactional
-    public Page<E> findAll(Pageable pageable) throws Exception {
-        try {
-            Page<E> entities = baseRepository.findAll(pageable);
-            return entities;
-        }catch (Exception e) {
-            throw new Exception(e.getMessage());
+
+    public void reallyDelete(ID id) {
+        Optional<E> optionalEntity = baseRepository.findById(id);
+        if (optionalEntity.isPresent()) {
+            E entity = optionalEntity.get();
+            baseRepository.delete(entity); // elimina totalmente
+        } else {
+            throw new EntityNotFoundException("No se encontró la entidad con id: " + id);
         }
     }
+
 }
