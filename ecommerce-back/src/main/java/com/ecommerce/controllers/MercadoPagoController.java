@@ -1,5 +1,6 @@
 package com.ecommerce.controllers;
 import com.ecommerce.dto.CompraRequestDTO;
+import com.ecommerce.dto.CompraResponseDTO;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.PurchaseOrder;
 import com.ecommerce.entities.PurchaseOrderDetail;
@@ -33,7 +34,9 @@ public class MercadoPagoController {
     public ResponseEntity<String> mp(@RequestBody CompraRequestDTO body) throws Exception {
         MercadoPagoConfig.setAccessToken(mercadoPagoAccessToken);
 
-        List<PurchaseOrderDetail> detalles = purchaseOrderDetailService.generarOrdenCompra(body.getProductos());
+        CompraResponseDTO compra = purchaseOrderDetailService.generarOrdenCompra(body.getProductos());
+        List<PurchaseOrderDetail> detalles = compra.getDetalles();
+        Long orderId = compra.getOrderId();
 
         List<PreferenceItemRequest> items = new ArrayList<>();
         for (PurchaseOrderDetail detalle : detalles) {
@@ -69,6 +72,7 @@ public class MercadoPagoController {
                 .backUrls(backUrls)
                 .paymentMethods(paymentMethods)
                 .autoReturn("approved")
+                .externalReference(orderId.toString())
                 .build();
 
         PreferenceClient client = new PreferenceClient();

@@ -1,6 +1,7 @@
 package com.ecommerce.services;
 
 
+import com.ecommerce.dto.CompraResponseDTO;
 import com.ecommerce.dto.ProductCompraDTO;
 import com.ecommerce.entities.*;
 import com.ecommerce.repositories.*;
@@ -33,13 +34,14 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
 
 
     @Transactional
-    public List<PurchaseOrderDetail> generarOrdenCompra(List<ProductCompraDTO> productosDTO) throws Exception {
+    public CompraResponseDTO generarOrdenCompra(List<ProductCompraDTO> productosDTO) throws Exception {
         List<PurchaseOrderDetail> detalles = new ArrayList<>();
         double precioTotal = 0.0;
 
         PurchaseOrder ordenCompra = PurchaseOrder.builder()
                 .date(LocalDate.now())
                 .finalPrice(0.0) // se actualizará al final
+                .state(PurchaseOrderStateENUM.PENDING)
                 .build();
 
         purchaseOrderRepository.save(ordenCompra);
@@ -49,7 +51,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
                     .orElseThrow(() -> new Exception("No se encontró el ProductVariant con id: " + dto.getVariantId()));
 
             Product producto = pv.getProduct();
-            double precioBase = producto.getSellPrice();
+            double precioBase = producto.getSellPrice() * pv.getQuantity();
 
             Discount descuento = null;
             double porcentajeDescuento = 0.0;
@@ -65,7 +67,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
             PurchaseOrderDetail detalle = PurchaseOrderDetail.builder()
                     .purchaseOrder(ordenCompra)
                     .productVariant(pv)
-                    .quantity(1)
+                    .quantity(pv.getQuantity())
                     .unitPrice(precioFinal)
                     .totalPrice(precioFinal)
                     .discount(descuento)
@@ -75,8 +77,13 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
             precioTotal += precioFinal;
         }
 
+
         ordenCompra.setFinalPrice(precioTotal);
         purchaseOrderRepository.save(ordenCompra);
-        return purchaseOrderDetailRepository.saveAll(detalles);
+        List<PurchaseOrderDetail> detallesGuardados = purchaseOrderDetailRepository.saveAll(detalles);
+
+        return new CompraResponseDTO(ordenCompra.getId(), detallesGuardados);
     }
+
+
 }
