@@ -2,10 +2,8 @@ package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,10 +19,12 @@ public class PurchaseOrder extends Base{
     private Double finalPrice;
     private String paymentMethod;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "id_address")
     private Address address;

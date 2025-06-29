@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/sizes")
-public class SizeController extends BaseController<Size, Long> {
+public class SizeController extends BaseSimpleController<Size, Long> {
     public SizeController(SizeService sizeService) {
         super(sizeService);
     }

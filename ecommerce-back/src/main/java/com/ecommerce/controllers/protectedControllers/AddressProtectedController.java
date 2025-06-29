@@ -12,36 +12,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/protected/addresses")
+@RequestMapping("/api/profile/addresses")
 public class AddressProtectedController {
 
     private final AddressService addressService;
     private final UserService userService;
+    private final AddressMapper addressMapper;
 
-    public AddressProtectedController(AddressService service, UserService userService) {
+    public AddressProtectedController(AddressService service, UserService userService, AddressMapper addressMapper) {
         this.addressService = service;
         this.userService = userService;
+        this.addressMapper = addressMapper;
     }
 
 
     @GetMapping("/getAll")
-    public ResponseEntity<Set<AddressDTO>> getAll() {
+    public ResponseEntity<List<AddressDTO>> getAll() {
         User user = userService.getCurrentUser();
-        Set<Address> addresses = addressService.getAllByUserId(user.getId());
-        Set<AddressDTO> addressesDTO = addresses.stream()
-                .map(AddressMapper::toDTO)
-                .collect(Collectors.toSet());
+        List<Address> addresses = addressService.getAllByUserId(user.getId());
+        List<AddressDTO> addressesDTO = addresses.stream()
+                .map(addressMapper::toDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(addressesDTO);
     }
 
-    @PutMapping("/update-by-id/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<AddressDTO> updateMyAddress(@RequestBody UpdateAddressDTO addressDTO, @PathVariable Long id) throws Exception {
-        String email = userService.getCurrentEmail();
-        return ResponseEntity.ok(addressService.updateWhitDTO(id, addressDTO, email));
+        User user = userService.getCurrentUser();
+        return ResponseEntity.ok(addressService.updateWhitDTO(id, addressDTO, user.getId()));
     }
 
     @PostMapping("/create")
