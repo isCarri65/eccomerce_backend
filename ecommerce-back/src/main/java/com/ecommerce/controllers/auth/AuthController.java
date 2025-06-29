@@ -15,31 +15,32 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-
 public class AuthController {
 
     private final AuthService authService;
-    private final TokenBlackListService tokenBlackListService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
-
-
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) throws DataIntegrityViolationException {
-
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
-                authService.logout(authHeader);
+        authService.logout(authHeader);
         return ResponseEntity.noContent().build();
     }
 
-
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refresh(@RequestHeader("Authorization") String refreshTokenHeader) {
+        String refreshToken = refreshTokenHeader.replace("Bearer ", "");
+        JwtResponse newTokens = authService.refreshToken(refreshToken);
+        return ResponseEntity.ok(newTokens);
+    }
 }
+

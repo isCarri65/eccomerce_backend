@@ -70,5 +70,14 @@ public class JwtService {
     }
 
 
+    public String generateRefreshToken(UserDetails user) {
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 días
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
+    
 }

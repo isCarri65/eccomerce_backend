@@ -12,48 +12,46 @@ import com.ecommerce.services.TokenBlackListService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final JwtService jWTService;
+    private final JwtService jwtService; // Usar solo uno, eliminé duplicado jWTService
     private final PasswordEncoder passwordEncoder;
     private final TokenBlackListService tokenBlackListService;
-    private final JwtService jwtService;
 
     public JwtResponse login(LoginRequest request) throws EntityNotFoundException {
-       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
 
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
-       if(optionalUser.isEmpty()){
-           throw new EntityNotFoundException("User not found");
-       } else {
-           UserDTO user = UserProfileMapper.toDTO(optionalUser.get());
-           UserDetails userDetails = optionalUser.get();
-           user.setRole(optionalUser.get().getRole().name());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-           String token = jWTService.getToken(userDetails);
+        UserDTO userDTO = UserProfileMapper.toDTO(user);
+        userDTO.setRole(user.getRole().name());
 
-           return new JwtResponse(token, user);
-       }
+        String accessToken = jwtService.getToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user); // NUEVO
 
+        return JwtResponse.builder()
+                .token(accessToken)
+                .refreshToken(refreshToken) // NUEVO
+                .user(userDTO)
+                .build();
     }
+
     public JwtResponse register(RegisterRequest request) throws DataIntegrityViolationException {
-        if(userRepository.existsByEmail(request.getEmail())){
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new DataIntegrityViolationException("Este email ya existe");
         }
         User user = User.builder()
@@ -64,20 +62,22 @@ public class AuthService {
                 .birthDate(request.getBirthDate())
                 .role(Role.USER)
                 .build();
-       User userCreate = userRepository.save(user);
+        User userCreated = userRepository.save(user);
 
-        UserDTO userDTO = UserProfileMapper.toDTO(userCreate);
+        UserDTO userDTO = UserProfileMapper.toDTO(userCreated);
         userDTO.setRole(user.getRole().name());
 
-
-        String token = jWTService.getToken(userCreate);
+        String accessToken = jwtService.getToken(userCreated);
+        String refreshToken = jwtService.generateRefreshToken(userCreated); // NUEVO
 
         return JwtResponse.builder()
-                .token(token)
+                .token(accessToken)
+                .refreshToken(refreshToken) // NUEVO
                 .user(userDTO)
                 .build();
     }
-    public void  logout(String authHeader){
+
+    public void logout(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new BadCredentialsException("Invalid token or null");
         }
@@ -87,4 +87,34 @@ public class AuthService {
         tokenBlackListService.blacklistToken(token, expiresAt);
         System.out.println("Logout successful");
     }
+
+    public JwtResponse refreshToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.trim().isEmpty()) {
+            throw new BadCredentialsException("Refresh token vacío o nulo");
+        }
+
+        String userEmail = jwtService.getEmailFromToken(refreshToken);
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            throw new BadCredentialsException("Refresh token inválido o expirado");
+        }
+
+        String newAccessToken = jwtService.getToken(user);
+
+        String newRefreshToken = jwtService.generateRefreshToken(user); // rotar el refresh opcional
+
+        UserDTO userDTO = UserProfileMapper.toDTO(user);
+        userDTO.setRole(user.getRole().name());
+
+        return JwtResponse.builder()
+                .token(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .user(userDTO)
+                .build();
+    }
+
 }
+
