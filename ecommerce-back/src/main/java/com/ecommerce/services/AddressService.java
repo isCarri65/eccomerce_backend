@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,8 +21,8 @@ public class AddressService extends BaseService<Address, Long>{
         super(addressRepository);
     }
 
-    public Set<Address> getAllByUserId(Long userId){
-        return  addressRepository.findAllByUser_Id(userId);
+    public List<Address> getAllByUserId(Long userId){
+        return  addressRepository.findByUserId(userId);
     }
     public AddressDTO updateWhitDTO (Long id, UpdateAddressDTO addressDTO, String email) throws AccessDeniedException {
         Optional<Address> optionalAddress = addressRepository.findById(id);

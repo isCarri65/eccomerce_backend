@@ -1,21 +1,24 @@
 package com.ecommerce.services;
 
-import com.ecommerce.entities.PurchaseOrderDetail;
+import com.ecommerce.dto.CompraResponseDTO;
+import com.ecommerce.dto.ProductCompraDTO;
+import com.ecommerce.entities.*;
+import com.ecommerce.repositories.DiscountRepository;
+import com.ecommerce.repositories.ProductVariantRepository;
 import com.ecommerce.repositories.PurchaseOrderDetailRepository;
+import com.ecommerce.repositories.PurchaseOrderRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail, Long> {
-    private final PurchaseOrderDetailRepository purchaseOrderDetailRepository;
-    private final PurchaseOrderRepository purchaseOrderRepository;
-
-    public PurchaseOrderDetailService(PurchaseOrderDetailRepository purchaseOrderDetailRepository, PurchaseOrderRepository purchaseOrderRepository) {
-public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail, Long> {
-
     private final ProductVariantRepository productVariantRepository;
     private final DiscountRepository discountRepository;
     private final PurchaseOrderDetailRepository purchaseOrderDetailRepository;
@@ -26,6 +29,8 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
                                       DiscountRepository discountRepository,
                                       PurchaseOrderRepository purchaseOrderRepository) {
         super(purchaseOrderDetailRepository);
+        this.productVariantRepository = productVariantRepository;
+        this.discountRepository = discountRepository;
         this.purchaseOrderDetailRepository = purchaseOrderDetailRepository;
         this.purchaseOrderRepository = purchaseOrderRepository;
     }
@@ -37,10 +42,6 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
         }
 
         return purchaseOrderDetailRepository.findByPurchaseOrderId(id);
-        this.productVariantRepository = productVariantRepository;
-        this.discountRepository = discountRepository;
-        this.purchaseOrderDetailRepository = purchaseOrderDetailRepository;
-        this.purchaseOrderRepository = purchaseOrderRepository;
     }
 
 
@@ -51,7 +52,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
 
         PurchaseOrder ordenCompra = PurchaseOrder.builder()
                 .date(LocalDate.now())
-                .finalPrice(0.0) // se actualizará al final
+                .finalPrice(0.0)
                 .state(PurchaseOrderStateENUM.PENDING)
                 .build();
 

@@ -17,8 +17,5 @@ public class AddressController extends BaseController<Address, Long> {
         super(addressService);
         this.addressService = addressService;
     }
-    @GetMapping("/user/{userId}")
-    public List<Address> obtenerImagenesPorProducto(@PathVariable Long userId) {
-        return addressService.findAddresForUserId(userId);
-    }
+
 }
