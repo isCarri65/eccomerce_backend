@@ -4,13 +4,15 @@ import com.ecommerce.customException.InvalidRoleException;
 import com.ecommerce.dto.User.*;
 import com.ecommerce.entities.Role;
 import com.ecommerce.entities.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
+@RequiredArgsConstructor
 @Component
 public class UserAdminMapper implements BaseAdminMapper<User, UserAdminDTO, CreateUserAdminDTO, UpdateUserAdminDTO> {
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
     public UserAdminDTO toDTO(User user) {
         UserAdminDTO dto = new UserAdminDTO();
         dto.setId(user.getId());
