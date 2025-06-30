@@ -12,6 +12,8 @@ public class UserProfileMapper {
         dto.setName(user.getName());
         dto.setBirthDate(user.getBirthDate());
         dto.setRole(String.valueOf(user.getRole()));
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
         return dto;
     }
 

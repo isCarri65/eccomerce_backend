@@ -25,7 +25,7 @@ public class DiscountPublicController {
         return ResponseEntity.ok(service.getAllActives());
     }
 
-    @GetMapping("/{id}") // Doble llave para escapar en format()
+    @GetMapping("/{id}")
     public ResponseEntity<DiscountRule> getByIdActives(@PathVariable Long id) {
         return service.findByIdActive(id)
                 .map(ResponseEntity::ok)
