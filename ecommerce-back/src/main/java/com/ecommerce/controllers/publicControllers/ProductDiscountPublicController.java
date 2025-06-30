@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -31,5 +32,13 @@ public class ProductDiscountPublicController {
         return service.findByIdActive(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<ProductDiscount>> getByProductId(@PathVariable("productId") Long productId) {
+        List<ProductDiscount> discount = service.getDiscountByProductId(productId);
+        if (discount.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(discount);
     }
 }

@@ -29,6 +29,7 @@ public class EcommerceBackendApplication {
                                  ProductVariantRepository productVariantRepository,
                                  SizeRepository sizeRepository,
                                  ColorRepository colorRepository,
+                                 ProductDiscountRepository productDiscountRepository,
                                  DiscountRepository discountRepository) {
         return args -> {
 
@@ -64,6 +65,7 @@ public class EcommerceBackendApplication {
                     ProductGenreENUM.MALE,
                     categorias
             );
+
             Product producto2 = new Product(
                     "Compleja la cosa",
                     200.0,
@@ -129,7 +131,15 @@ public class EcommerceBackendApplication {
                     .build();
             discountRepository.save(discount);
 
+            //crear descuento
+            ProductDiscount productDiscount = ProductDiscount.builder()
+                    .state(true)
+                    .product(producto)
+                    .discount(discount)
+                    .build();
+            productDiscountRepository.save(productDiscount);
         };
+
     }
 
 }

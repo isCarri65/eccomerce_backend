@@ -16,9 +16,10 @@ import java.util.Set;
 
 @Service
 public class AddressService extends BaseService<Address, Long>{
-    private AddressRepository addressRepository;
+    private final AddressRepository addressRepository;
     public AddressService(AddressRepository addressRepository) {
         super(addressRepository);
+        this.addressRepository = addressRepository;
     }
 
     public List<Address> getAllByUserId(Long userId){
