@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/purchaseOrderDetails")
-public class PurchaseOrderDetailController extends BaseController<PurchaseOrderDetail, Long> {
+public class PurchaseOrderDetailController extends BaseSimpleController<PurchaseOrderDetail, Long> {
     public PurchaseOrderDetailController(PurchaseOrderDetailService purchaseOrderDetailService) {
         super(purchaseOrderDetailService);
     }

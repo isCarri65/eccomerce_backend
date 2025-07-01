@@ -1,7 +1,9 @@
 
 package com.ecommerce.controllers.publicControllers;
 
+import com.ecommerce.dto.productVariant.ProductVariantDTO;
 import com.ecommerce.entities.ProductVariant;
+import com.ecommerce.mappers.ProductVariantMapper;
 import com.ecommerce.services.ProductVariantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,22 +16,9 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/public/productvariants")
-public class ProductVariantPublicController {
-    private final ProductVariantService service;
+public class ProductVariantPublicController  extends  BasePublicController<ProductVariant,Long, ProductVariantDTO> {
 
-    public ProductVariantPublicController(ProductVariantService service) {
-        this.service = service;
-    }
-
-    @GetMapping
-    public ResponseEntity<Set<ProductVariant>> getAllActives() {
-        return ResponseEntity.ok(service.getAllActives());
-    }
-
-    @GetMapping("/{id}") // Doble llave para escapar en format()
-    public ResponseEntity<ProductVariant> getByIdActives(@PathVariable Long id) {
-        return service.findByIdActive(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ProductVariantPublicController(ProductVariantService service , ProductVariantMapper mapper) {
+        super(service, mapper);
     }
 }

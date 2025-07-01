@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/types")
-public class TypeController extends BaseController<Type, Long> {
+public class TypeController extends BaseSimpleController<Type, Long> {
     public TypeController(TypeService typeService) {
         super(typeService);
     }

@@ -1,10 +1,9 @@
 
 package com.ecommerce.controllers.publicControllers;
 
-import com.ecommerce.entities.Discount;
+import com.ecommerce.entities.DiscountRule;
 import com.ecommerce.services.DiscountService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +21,12 @@ public class DiscountPublicController {
     }
 
     @GetMapping
-    public ResponseEntity<Set<Discount>> getAllActives() {
+    public ResponseEntity<Set<DiscountRule>> getAllActives() {
         return ResponseEntity.ok(service.getAllActives());
     }
 
-    @GetMapping("/{id}") // Doble llave para escapar en format()
-    public ResponseEntity<Discount> getByIdActives(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<DiscountRule> getByIdActives(@PathVariable Long id) {
         return service.findByIdActive(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

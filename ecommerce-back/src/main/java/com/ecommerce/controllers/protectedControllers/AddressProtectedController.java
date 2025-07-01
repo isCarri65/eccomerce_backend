@@ -17,15 +17,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/protected/addresses")
+@RequestMapping("/api/profile/addresses")
 public class AddressProtectedController {
 
     private final AddressService addressService;
     private final UserService userService;
+    private final AddressMapper addressMapper;
 
-    public AddressProtectedController(AddressService service, UserService userService) {
+    public AddressProtectedController(AddressService service, UserService userService, AddressMapper addressMapper) {
         this.addressService = service;
         this.userService = userService;
+        this.addressMapper = addressMapper;
     }
 
 
@@ -34,15 +36,15 @@ public class AddressProtectedController {
         User user = userService.getCurrentUser();
         List<Address> addresses = addressService.getAllByUserId(user.getId());
         List<AddressDTO> addressesDTO = addresses.stream()
-                .map(AddressMapper::toDTO)
+                .map(addressMapper::toDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(addressesDTO);
     }
 
-    @PutMapping("/update-by-id/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<AddressDTO> updateMyAddress(@RequestBody UpdateAddressDTO addressDTO, @PathVariable Long id) throws Exception {
-        String email = userService.getCurrentEmail();
-        return ResponseEntity.ok(addressService.updateWhitDTO(id, addressDTO, email));
+        User user = userService.getCurrentUser();
+        return ResponseEntity.ok(addressService.updateWhitDTO(id, addressDTO, user.getId()));
     }
 
     @PostMapping("/create")

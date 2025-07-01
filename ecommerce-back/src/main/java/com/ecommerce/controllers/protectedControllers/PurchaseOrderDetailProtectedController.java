@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/protected/purchaseOrderDetails")
+@RequestMapping("/api/profile/purchaseOrderDetails")
 public class PurchaseOrderDetailProtectedController {
 
     private final PurchaseOrderDetailService purchaseOrderDetailService;
@@ -29,7 +29,7 @@ public class PurchaseOrderDetailProtectedController {
     public ResponseEntity<List<PurchaseOrderDetail>> getAllByOrderId(@PathVariable Long id) throws Exception {
         User user = userService.getCurrentUser();
 
-        return ResponseEntity.ok(purchaseOrderDetailService.getAllByOrderId(id, user.getId()));
+        return ResponseEntity.ok(purchaseOrderDetailService.getAllByOrderIdAndUserId(id, user.getId()));
     }
 
     /*

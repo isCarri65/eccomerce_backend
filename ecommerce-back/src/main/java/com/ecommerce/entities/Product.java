@@ -2,27 +2,26 @@ package com.ecommerce.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
+@ToString(exclude = "productVariants")
+
 public class Product extends Base{
     private String name;
-    private Double buyPrice;
-    private Double sellPrice;
+    private BigDecimal buyPrice;
+    private BigDecimal sellPrice;
     private String description;
     private Boolean state;
 
@@ -33,4 +32,23 @@ public class Product extends Base{
     @ManyToMany
     @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_category"))
     private Set<Category> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductVariant> productVariants = new ArrayList<>();
+
+    public int getTotalStock() {
+        return productVariants.stream()
+                .mapToInt(v -> v.getQuantity() != null ? v.getQuantity() : 0)
+                .sum();
+    }
+
+    public void addVariant(ProductVariant variant) {
+        if (productVariants == null) {
+            productVariants = new ArrayList<>();
+        }
+        productVariants.add(variant);
+    }
+
+
+
 }

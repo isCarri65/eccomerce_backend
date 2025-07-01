@@ -8,10 +8,11 @@ import java.util.List;
 
 @Service
 public class FavoriteService extends BaseService<Favorite, Long> {
-    private FavoriteRepository favoriteRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public FavoriteService(FavoriteRepository favoriteRepository) {
         super(favoriteRepository);
+        this.favoriteRepository = favoriteRepository;
     }
 
     public List<Favorite> findAllByUserId(Long userId) {

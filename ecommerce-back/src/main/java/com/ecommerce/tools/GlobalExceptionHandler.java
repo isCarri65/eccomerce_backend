@@ -1,5 +1,7 @@
 package com.ecommerce.tools;
 
+import com.ecommerce.customException.InvalidFileExtensionException;
+import com.ecommerce.customException.InvalidRoleException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 //import jakarta.validation.ConstraintViolationException;
 
+import javax.management.relation.InvalidRoleValueException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +22,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<String> handleInvalidRoleValueException(InvalidRoleException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
     // Validación @Valid fallida
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -33,7 +40,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDuplicateKey(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Error: El email ya está registrado.");
+                .body("Error con un atributo de valor incorrecto: " + ex.getMessage());
+    }
+
+    //Extension no valida
+    @ExceptionHandler(InvalidFileExtensionException.class)
+    public ResponseEntity<String> handleInvalidFileExtension(InvalidFileExtensionException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     // Cualquier otra excepción

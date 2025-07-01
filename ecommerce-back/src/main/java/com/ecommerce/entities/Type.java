@@ -19,5 +19,4 @@ import java.util.Set;
 @Builder
 public class Type extends Base{
     private String name;
-
 }
