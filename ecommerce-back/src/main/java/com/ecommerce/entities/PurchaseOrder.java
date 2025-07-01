@@ -5,6 +5,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 @Builder
 public class PurchaseOrder extends Base{
     private LocalDate date;
-    private Double finalPrice;
+    private BigDecimal finalPrice;
     private String paymentMethod;
 
     @NotNull

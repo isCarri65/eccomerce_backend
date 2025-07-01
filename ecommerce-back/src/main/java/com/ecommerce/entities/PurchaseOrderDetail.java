@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "purchase_order_detail")
 @AllArgsConstructor
@@ -16,8 +18,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PurchaseOrderDetail extends Base{
     private Integer quantity;
-    private Double unitPrice;
-    private Double totalPrice;
+    private BigDecimal unitPrice;
+    private BigDecimal totalPrice;
 
     @NotNull
     @ManyToOne
