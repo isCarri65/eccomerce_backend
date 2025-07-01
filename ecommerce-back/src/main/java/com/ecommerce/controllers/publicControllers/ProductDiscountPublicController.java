@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/public/productdiscounts")
+@RequestMapping("/api/public/productDiscounts")
 public class ProductDiscountPublicController {
     private final ProductDiscountService service;
 

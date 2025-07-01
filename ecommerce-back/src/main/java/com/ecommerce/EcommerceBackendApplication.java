@@ -89,7 +89,15 @@ public class EcommerceBackendApplication {
                     .birthDate(LocalDate.of(1990, 5, 20))
                     .build();
             userRepository.save(user);
-
+            User user2 = User.builder()
+                    .name("admin")
+                    .lastName("admin")
+                    .email("admin@admin.com")
+                    .password("admin") // recordá hashearla si usás login
+                    .role(Role.ADMIN)
+                    .birthDate(LocalDate.of(1990, 5, 20))
+                    .build();
+            userRepository.save(user2);
             // Crear una dirección
             Address address = Address.builder()
                     .street("Av. Siempre Viva")
