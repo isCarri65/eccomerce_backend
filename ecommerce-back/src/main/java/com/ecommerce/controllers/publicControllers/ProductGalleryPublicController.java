@@ -35,7 +35,7 @@ public class ProductGalleryPublicController {
     }
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ProductGallery>> getByProductId(@PathVariable("productId") Long productId) {
-        List<ProductGallery> images = service.getImageByProductId(productId);
+        List<ProductGallery> images = service.getAllByProductId(productId);
         if (images.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

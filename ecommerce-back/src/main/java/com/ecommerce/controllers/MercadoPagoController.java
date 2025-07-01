@@ -47,7 +47,7 @@ public class MercadoPagoController {
                     .description(producto.getDescription())
                     .quantity(detalle.getQuantity())
                     .currencyId("ARS")
-                    .unitPrice(BigDecimal.valueOf(detalle.getUnitPrice()))
+                    .unitPrice(detalle.getUnitPrice())
                     .build();
             items.add(item);
         }

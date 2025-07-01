@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
 public class PurchaseOrderResponseDTO {
     private Long id;
     private LocalDate date;
-    private Double finalPrice;
+    private BigDecimal finalPrice;
     private String paymentMethod;
     private UserDTO user;
     private AddressDTO address;
