@@ -8,4 +8,5 @@ import java.util.List;
 public class CompraRequestDTO {
     private List<ProductCompraDTO> productos;
     private Long idUser;
+    private Long idAddres;
 }

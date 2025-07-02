@@ -1,11 +1,11 @@
 package com.ecommerce.controllers;
 import com.ecommerce.dto.CompraRequestDTO;
 import com.ecommerce.dto.CompraResponseDTO;
-import com.ecommerce.entities.Product;
-import com.ecommerce.entities.PurchaseOrder;
-import com.ecommerce.entities.PurchaseOrderDetail;
+import com.ecommerce.entities.*;
+import com.ecommerce.services.AddressService;
 import com.ecommerce.services.PurchaseOrderDetailService;
 import com.ecommerce.services.PurchaseOrderService;
+import com.ecommerce.services.UserService;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.resources.preference.Preference;
@@ -25,6 +25,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MercadoPagoController {
     private final PurchaseOrderDetailService purchaseOrderDetailService;
+    private final UserService userService;
+    private final AddressService addressService;
 
     @Value("${mercadopago.access-token}")
     private String mercadoPagoAccessToken;
@@ -33,8 +35,10 @@ public class MercadoPagoController {
     @CrossOrigin("*")
     public ResponseEntity<String> mp(@RequestBody CompraRequestDTO body) throws Exception {
         MercadoPagoConfig.setAccessToken(mercadoPagoAccessToken);
+        User user = userService.getCurrentUser();
+        Address address = addressService.findById(body.getIdAddres());
 
-        CompraResponseDTO compra = purchaseOrderDetailService.generarOrdenCompra(body.getProductos());
+        CompraResponseDTO compra = purchaseOrderDetailService.generarOrdenCompra(body.getProductos(), user, address);
         List<PurchaseOrderDetail> detalles = compra.getDetalles();
         Long orderId = compra.getOrderId();
 

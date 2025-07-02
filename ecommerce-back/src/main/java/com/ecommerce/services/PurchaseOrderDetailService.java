@@ -3,6 +3,7 @@ package com.ecommerce.services;
 import com.ecommerce.entities.PurchaseOrder;
 import com.ecommerce.entities.PurchaseOrderDetail;
 import com.ecommerce.repositories.*;
+import com.thoughtworks.qdox.model.expression.Add;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -46,14 +47,17 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
 
 
     @Transactional
-    public CompraResponseDTO generarOrdenCompra(List<ProductCompraDTO> productosDTO) throws Exception {
+    public CompraResponseDTO generarOrdenCompra(List<ProductCompraDTO> productosDTO, User user, Address address) throws Exception {
         List<PurchaseOrderDetail> detalles = new ArrayList<>();
         BigDecimal precioTotal = BigDecimal.ZERO;
+
 
         PurchaseOrder ordenCompra = PurchaseOrder.builder()
                 .date(LocalDate.now())
                 .finalPrice(BigDecimal.ZERO) // Cambiado a BigDecimal
                 .state(PurchaseOrderStateENUM.PENDING)
+                .user(user)
+                .address(address)
                 .build();
 
         purchaseOrderRepository.save(ordenCompra);
