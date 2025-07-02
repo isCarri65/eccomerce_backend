@@ -51,7 +51,7 @@ public class MercadoPagoController {
                     .build();
             items.add(item);
         }
-
+        //MALA PRACTICA DE PROGRAMACIÓN LAS URL SIEMPRE VAN EN ENV O ARCHIVO CONFIG
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
                 .success("https://localhost:5173/paymentSuccess")
                 .pending("https://localhost:5173/")

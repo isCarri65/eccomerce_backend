@@ -7,9 +7,11 @@ import com.ecommerce.dto.Product.ProductDTO;
 import com.ecommerce.dto.Product.ProductListDTO;
 import com.ecommerce.dto.ProductFilterDTO;
 import com.ecommerce.dto.ProductGallery.CreateProductGalleryDTO;
+import com.ecommerce.dto.productVariant.ProductVariantDTO;
 import com.ecommerce.entities.DiscountRule;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.ProductGallery;
+import com.ecommerce.entities.ProductVariant;
 import com.ecommerce.mappers.*;
 
 
@@ -36,6 +38,7 @@ public class ProductService extends BaseService<Product, Long> {
     private final DiscountService discountService;
     private final ProductMapper productMapper;
     private final ProductGalleryService productGalleryService;
+    private final ProductVariantMapper productVariantMapper;
 
     private final CategoryMapper categoryMapper;
 
@@ -44,7 +47,8 @@ public class ProductService extends BaseService<Product, Long> {
                           DiscountService discountService,
                           ProductMapper productMapper,
                           ProductGalleryService productGalleryService,
-                          CategoryMapper categoryMapper) {
+                          CategoryMapper categoryMapper,
+                          ProductVariantMapper productVariantMapper) {
         super(productRepository);
         this.productRepository = productRepository;
         this.productAdminMapper = productAdminMapper;
@@ -52,6 +56,18 @@ public class ProductService extends BaseService<Product, Long> {
         this.productMapper = productMapper;
         this.productGalleryService = productGalleryService;
         this.categoryMapper = categoryMapper;
+        this.productVariantMapper = productVariantMapper;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductVariantDTO> getVariantsByProductId(Long productId) {
+        Product product = productRepository.safeFindByIdWithVariants(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
+
+        return product.getProductVariants().stream()
+                .filter(ProductVariant::getState) // solo activos
+                .map(productVariantMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

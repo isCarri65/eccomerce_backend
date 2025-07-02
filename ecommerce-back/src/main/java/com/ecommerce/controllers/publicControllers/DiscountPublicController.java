@@ -1,6 +1,7 @@
 
 package com.ecommerce.controllers.publicControllers;
 
+import com.ecommerce.dto.Discount.DiscountDTO;
 import com.ecommerce.entities.DiscountRule;
 import com.ecommerce.services.DiscountService;
 import org.springframework.http.ResponseEntity;
@@ -31,4 +32,21 @@ public class DiscountPublicController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<DiscountDTO> getDiscountByProductId(@PathVariable Long productId) {
+        return service.getBestDiscountByProductId(productId)
+                .map(discount -> ResponseEntity.ok(toDTO(discount)))
+                .orElse(ResponseEntity.noContent().build());
+    }
+
+    private DiscountDTO toDTO(DiscountRule discount) {
+        return DiscountDTO.builder()
+                .id(discount.getId())
+                .startDate(discount.getStartDate())
+                .endDate(discount.getEndDate())
+                .percentage(discount.getPercentage())
+                .state(discount.getState())
+                .build();
+    }
+
 }

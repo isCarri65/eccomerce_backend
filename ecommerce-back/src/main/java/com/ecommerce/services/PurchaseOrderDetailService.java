@@ -66,7 +66,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
 
             // Multiplicamos BigDecimal por cantidad (int)
             BigDecimal precioUnitario = producto.getSellPrice();
-            BigDecimal cantidad = BigDecimal.valueOf(pv.getQuantity());
+            BigDecimal cantidad = BigDecimal.valueOf(dto.getQuantityUser());
             BigDecimal precioBase = precioUnitario.multiply(cantidad);
 
             DiscountRule descuento = null;
@@ -85,7 +85,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
             PurchaseOrderDetail detalle = PurchaseOrderDetail.builder()
                     .purchaseOrder(ordenCompra)
                     .productVariant(pv)
-                    .quantity(pv.getQuantity())
+                    .quantity(dto.getQuantityUser())
                     .unitPrice(precioUnitario)
                     .totalPrice(precioFinal)
                     .discount(descuento)
@@ -93,6 +93,12 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
 
             detalles.add(detalle);
             precioTotal = precioTotal.add(precioFinal);
+
+            if (pv.getQuantity() < dto.getQuantityUser()) {
+                throw new Exception("Stock insuficiente para el ProductVariant con id: " + dto.getVariantId());
+            }
+            pv.setQuantity(pv.getQuantity() - dto.getQuantityUser());
+            productVariantRepository.save(pv);
         }
 
         ordenCompra.setFinalPrice(precioTotal.setScale(2, RoundingMode.HALF_UP));

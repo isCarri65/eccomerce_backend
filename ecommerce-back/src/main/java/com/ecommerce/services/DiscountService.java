@@ -4,6 +4,8 @@ import com.ecommerce.entities.Category;
 import com.ecommerce.entities.DiscountRule;
 import com.ecommerce.entities.Product;
 import com.ecommerce.repositories.DiscountRuleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -20,6 +22,14 @@ public class DiscountService extends BaseService<DiscountRule, Long> {
         super(discountRuleRepository);
         this.discountRuleRepository = discountRuleRepository;
 
+    }
+    @Autowired
+    @Lazy
+    private ProductService productService;
+
+    public Optional<DiscountRule> getBestDiscountByProductId(Long productId) {
+        Product product = productService.findById(productId);
+        return getBestApplicableDiscount(product);
     }
 
     public Optional<DiscountRule> getBestApplicableDiscount(Product product) {

@@ -4,6 +4,7 @@ package com.ecommerce.controllers.publicControllers;
 import com.ecommerce.dto.Product.ProductDTO;
 import com.ecommerce.dto.Product.ProductListDTO;
 import com.ecommerce.dto.ProductFilterDTO;
+import com.ecommerce.dto.productVariant.ProductVariantDTO;
 import com.ecommerce.entities.Product;
 import com.ecommerce.services.ProductService;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,10 @@ public class ProductPublicController {
     @GetMapping("/{id}") // Doble llave para escapar en format()
     public ResponseEntity<ProductDTO> getByIdActives(@PathVariable Long id) {
         return ResponseEntity.ok(service.getProductPublicById(id));
+    }
+    @GetMapping("/{productId}/variants")
+    public ResponseEntity<List<ProductVariantDTO>> getProductVariants(@PathVariable Long productId) {
+        return ResponseEntity.ok(service.getVariantsByProductId(productId));
     }
 
     @GetMapping
