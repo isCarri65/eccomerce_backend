@@ -7,7 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,117 +21,85 @@ public class EcommerceBackendApplication {
         System.out.println("Ecommerce Backend Application Started");
     }
     @Bean
-    public CommandLineRunner run(ProductRepository productRepository,
-                                 CategoryRepository categoryRepository,
-                                 TypeRepository typeRepository,
-                                 UserRepository userRepository,
-                                 AddressRepository addressRepository,
-                                 PurchaseOrderRepository purchaseOrderRepository,
-                                 PurchaseOrderDetailRepository purchaseOrderDetailRepository,
-                                 ProductVariantRepository productVariantRepository,
-                                 SizeRepository sizeRepository,
-                                 ColorRepository colorRepository,
-                                 DiscountRepository discountRepository) {
+    public CommandLineRunner run(
+            CategoryRepository categoryRepository,
+            TypeRepository typeRepository,
+            SizeRepository sizeRepository,
+            ColorRepository colorRepository,
+            ProductRepository productRepository,
+            ProductVariantRepository productVariantRepository,
+            PurchaseOrderRepository purchaseOrderRepository,
+            PurchaseOrderDetailRepository purchaseOrderDetailRepository
+    ) {
         return args -> {
 
-            // 1. Crear los tipos si querés
-            Type tipo1 = new Type();
-            tipo1.setName("Camisa");
-            typeRepository.save(tipo1);
 
-            // 2. Crear la galería
-            Gallery gallery = new Gallery();
-            gallery.setImage("https://example.com/image.jpg");
+            // Crear 3 tipos
+            Type type1 = Type.builder().name("Ropa").build();
+            Type type2 = Type.builder().name("Calzado").build();
+            Type type3 = Type.builder().name("Accesorios").build();
+            typeRepository.saveAll(List.of(type1, type2, type3));
 
-            // 3. Crear una categoría
-            Category category = new Category();
-            category.setName("Ropa Masculina");
-            category.setGallery(gallery);
-            category.getTypes().add(tipo1); // asociar tipo
+            // Crear 3 categorías
+            Category category1 = Category.builder()
+                    .name("Remeras")
+                    .imageUrl("https://example.com/remeras.jpg")
+                    .publicId("cat1")
+                    .type(type1)
+                    .build();
 
-            // Guardar la categoría (cascade = ALL guarda también gallery y types)
-            categoryRepository.save(category);
+            Category category2 = Category.builder()
+                    .name("Zapatillas")
+                    .imageUrl("https://example.com/zapatillas.jpg")
+                    .publicId("cat2")
+                    .type(type2)
+                    .build();
 
-            // 4. Crear el set de categorías
-            Set<Category> categorias = new HashSet<>();
-            categorias.add(category);
+            Category category3 = Category.builder()
+                    .name("Gorras")
+                    .imageUrl("https://example.com/gorras.jpg")
+                    .publicId("cat3")
+                    .type(type3)
+                    .build();
 
-            // 5. Crear el producto
-            Product producto = new Product(
-                    "Remera Básica",
-                    100.0,
-                    150.0,
-                    "Remera de algodón básica para hombre",
-                    true,
-                    ProductGenreENUM.MALE,
-                    categorias
+            categoryRepository.saveAll(List.of(category1, category2, category3));
+
+            // Crear 3 colores
+            Color color1 = Color.builder().name("Rojo").build();
+            Color color2 = Color.builder().name("Azul").build();
+            Color color3 = Color.builder().name("Verde").build();
+            colorRepository.saveAll(List.of(color1, color2, color3));
+
+            // Crear 3 talles
+            Size size1 = Size.builder().value("S").sizeType(SizeTypeENUM.LETTER).build();
+            Size size2 = Size.builder().value("M").sizeType(SizeTypeENUM.LETTER).build();
+            Size size3 = Size.builder().value("42").sizeType(SizeTypeENUM.NUMBER).build();
+            sizeRepository.saveAll(List.of(size1, size2, size3));
+
+            // Crear 6 productos, cada uno con 3 variantes (color y talle)
+            List<Product> productos = List.of(
+                    Product.builder().name("Remera Blanca").description("Remera blanca de algodón").sellPrice(new BigDecimal("5000")).state(true).genre(ProductGenreENUM.UNISEX).categories(Set.of(category1)).build(),
+                    Product.builder().name("Zapatillas Urbanas").description("Zapatillas cómodas para uso diario").sellPrice(new BigDecimal("15000")).state(true).genre(ProductGenreENUM.MALE).categories(Set.of(category2)).build(),
+                    Product.builder().name("Gorra Estampada").description("Gorra con diseño moderno").sellPrice(new BigDecimal("3500")).state(true).genre(ProductGenreENUM.FEMALE).categories(Set.of(category3)).build(),
+                    Product.builder().name("Campera Invierno").description("Campera abrigada para el frío").sellPrice(new BigDecimal("25000")).state(true).genre(ProductGenreENUM.UNISEX).categories(Set.of(category1)).build(),
+                    Product.builder().name("Botines Fútbol").description("Botines para césped natural").sellPrice(new BigDecimal("20000")).state(true).genre(ProductGenreENUM.MALE).categories(Set.of(category2)).build(),
+                    Product.builder().name("Mochila Urbana").description("Mochila resistente y con varios compartimentos").sellPrice(new BigDecimal("10000")).state(true).genre(ProductGenreENUM.UNISEX).categories(Set.of(category3)).build()
             );
-            Product producto2 = new Product(
-                    "Compleja la cosa",
-                    200.0,
-                    350.0,
-                    "ejemplo",
-                    true,
-                    ProductGenreENUM.MALE,
-                    categorias
-            );
+            productRepository.saveAll(productos);
 
-            // 6. Guardar el producto
-            productRepository.save(producto);
-            productRepository.save(producto2);
-            // Crear un usuario
-            User user = User.builder()
-                    .name("Juan")
-                    .lastName("Pérez")
-                    .email("juan@example.com")
-                    .password("123456") // recordá hashearla si usás login
-                    .role(Role.USER)
-                    .birthDate(LocalDate.of(1990, 5, 20))
-                    .build();
-            userRepository.save(user);
+            List<ProductVariant> variantes = new ArrayList<>();
+            for (Product product : productos) {
+                variantes.add(ProductVariant.builder().product(product).size(size1).color(color1).quantity(10).state(true).build());
+                variantes.add(ProductVariant.builder().product(product).size(size2).color(color2).quantity(8).state(true).build());
+                variantes.add(ProductVariant.builder().product(product).size(size3).color(color3).quantity(5).state(true).build());
+            }
+            productVariantRepository.saveAll(variantes);
 
-            // Crear una dirección
-            Address address = Address.builder()
-                    .street("Av. Siempre Viva")
-                    .number(742)
-                    .apartment("A")
-                    .aptNumberAndFloor("1A")
-                    .province("Buenos Aires")
-                    .locality("CABA")
-                    .postal("1000")
-                    .user(user)
-                    .build();
-            addressRepository.save(address);
-            // Crear talles
-            Size size = new Size();
-            size.setName("M");
-            sizeRepository.save(size);
-
-// Crear colores
-            Color color = new Color();
-            color.setName("Rojo");
-            colorRepository.save(color);
-
-// Crear ProductVariant
-            ProductVariant variant = ProductVariant.builder()
-                    .product(producto)
-                    .size(size)
-                    .color(color)
-                    .quantity(10)
-                    .state(true)
-                    .build();
-            productVariantRepository.save(variant);
-
-// Crear Discount
-            Discount discount = Discount.builder()
-                    .percentage(20.0)
-                    .startDate(LocalDate.now().minusDays(1))
-                    .endDate(LocalDate.now().plusDays(10))
-                    .state(true)
-                    .build();
-            discountRepository.save(discount);
-
+            System.out.println("Productos y variantes creados exitosamente.");
         };
     }
+
+
+
 
 }

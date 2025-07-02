@@ -1,5 +1,6 @@
 package com.ecommerce.controllers;
 import com.ecommerce.dto.CompraRequestDTO;
+import com.ecommerce.dto.CompraResponseDTO;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.PurchaseOrder;
 import com.ecommerce.entities.PurchaseOrderDetail;
@@ -33,7 +34,9 @@ public class MercadoPagoController {
     public ResponseEntity<String> mp(@RequestBody CompraRequestDTO body) throws Exception {
         MercadoPagoConfig.setAccessToken(mercadoPagoAccessToken);
 
-        List<PurchaseOrderDetail> detalles = purchaseOrderDetailService.generarOrdenCompra(body.getProductos());
+        CompraResponseDTO compra = purchaseOrderDetailService.generarOrdenCompra(body.getProductos());
+        List<PurchaseOrderDetail> detalles = compra.getDetalles();
+        Long orderId = compra.getOrderId();
 
         List<PreferenceItemRequest> items = new ArrayList<>();
         for (PurchaseOrderDetail detalle : detalles) {
@@ -44,11 +47,11 @@ public class MercadoPagoController {
                     .description(producto.getDescription())
                     .quantity(detalle.getQuantity())
                     .currencyId("ARS")
-                    .unitPrice(BigDecimal.valueOf(detalle.getUnitPrice()))
+                    .unitPrice(detalle.getUnitPrice())
                     .build();
             items.add(item);
         }
-
+        //MALA PRACTICA DE PROGRAMACIÓN LAS URL SIEMPRE VAN EN ENV O ARCHIVO CONFIG
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
                 .success("https://localhost:5173/paymentSuccess")
                 .pending("https://localhost:5173/")
@@ -69,6 +72,7 @@ public class MercadoPagoController {
                 .backUrls(backUrls)
                 .paymentMethods(paymentMethods)
                 .autoReturn("approved")
+                .externalReference(orderId.toString())
                 .build();
 
         PreferenceClient client = new PreferenceClient();

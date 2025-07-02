@@ -30,15 +30,12 @@ public class PurchaseOrderMapper {
             userDTO.setId(user.getId());
             userDTO.setName(user.getName());
             userDTO.setLastName(user.getLastName());
-            userDTO.setEmail(user.getEmail());
             userDTO.setBirthDate(user.getBirthDate());
             userDTO.setPhoneNumber(user.getPhoneNumber());
             dto.setUser(userDTO);
         }
 
-        // Map Address
         Address address = order.getAddress();
-        if (address != null) {
             AddressDTO addressDTO = new AddressDTO();
             addressDTO.setStreet(address.getStreet());
             addressDTO.setNumber(address.getNumber());
@@ -47,9 +44,8 @@ public class PurchaseOrderMapper {
             addressDTO.setProvince(address.getProvince());
             addressDTO.setLocality(address.getLocality());
             addressDTO.setPostal(address.getPostal());
-            addressDTO.setUserId(address.getUser().getId());
             dto.setAddress(addressDTO);
-        }
+
 
         List<PurchaseOrderDetailDTO> detailsDTO = new ArrayList<>();
 

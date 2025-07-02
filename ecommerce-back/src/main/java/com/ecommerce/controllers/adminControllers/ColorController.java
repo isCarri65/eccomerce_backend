@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/colors")
-public class ColorController extends BaseController<Color, Long> {
+public class ColorController extends BaseSimpleController<Color, Long> {
     public ColorController(ColorService colorService) {
         super(colorService);
     }

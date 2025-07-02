@@ -33,6 +33,9 @@ public class User extends Base implements UserDetails {
     private String email;
     private String password;
 
+    @Builder.Default
+    private boolean enabled = true;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -46,14 +49,9 @@ public class User extends Base implements UserDetails {
     public String getUsername() {
         return this.email;
     }
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
 
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
-
+    @Override public boolean isEnabled() { return this.enabled; }
 }

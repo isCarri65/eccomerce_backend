@@ -1,62 +1,53 @@
-package com.ecommerce.controllers;
+package com.ecommerce.controllers.adminControllers;
 
 import com.ecommerce.entities.Base;
+import com.ecommerce.mappers.BaseAdminMapper;
 import com.ecommerce.services.BaseService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
-public abstract class BaseController<E extends Base, ID extends Serializable> {
+public abstract class BaseController<
+        E extends Base,
+        ID extends Serializable,
+        EntityDTO,
+        CreateDTO,
+        UpdateDTO> {
 
     protected final BaseService<E, ID> service;
+    protected final BaseAdminMapper<E, EntityDTO, CreateDTO, UpdateDTO> mapper;
 
-    public BaseController(BaseService<E, ID> service){
+    public BaseController(BaseService<E, ID> service, BaseAdminMapper<E, EntityDTO, CreateDTO, UpdateDTO> mapper){
         this.service = service;
+        this.mapper = mapper;
     }
 
+
     @GetMapping
-    public ResponseEntity<List<E>> getAll() throws Exception {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<EntityDTO>> getAll(){
+        return ResponseEntity.ok(service.getAll(mapper::toDTO));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<E> findById(@PathVariable ID id) throws Exception {
-        System.out.println("id: " + id);
-        E entity = service.findById(id);
-        return entity != null ? ResponseEntity.ok(entity) : ResponseEntity.notFound().build();
-    }
-
-
-    public ResponseEntity<Set<E>> getAllActives(){
-        return ResponseEntity.ok(service.getAllActives());
-
+    public ResponseEntity<EntityDTO> findById(@PathVariable ID id){
+        return ResponseEntity.ok(service.findById(id, mapper::toDTO));
     }
 
     @PostMapping
-    public ResponseEntity<E> create(@RequestBody E entity) {
-        return ResponseEntity.ok(service.create(entity));
+    public ResponseEntity<EntityDTO> create(@RequestBody CreateDTO dto) {
+        return ResponseEntity.ok(service.create(dto, mapper));
     }
 
-    @PutMapping
-    public ResponseEntity<E> update(@RequestBody E entity) throws Exception {
-        return ResponseEntity.ok(service.update(entity));
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityDTO> update(@PathVariable ID id, @RequestBody UpdateDTO dto) {
+        return ResponseEntity.ok(service.update(id, dto, mapper));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable ID id) {
-        System.out.println("Entrando al delete");
-        try {
-            service.delete(id);
-            return ResponseEntity.ok("Eliminado correctamente");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el recurso con ID: " + id);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar el recurso.");
-        }
+    public ResponseEntity<Void> delete(@PathVariable ID id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

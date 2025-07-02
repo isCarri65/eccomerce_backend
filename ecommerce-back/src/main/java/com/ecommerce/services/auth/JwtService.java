@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*2))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -36,6 +38,11 @@ public class JwtService {
 
     public String getEmailFromToken(String token){
         return getClaim(token, Claims::getSubject);
+    }
+
+    public <T> T getClaim(String token, Function<Claims, T> claimsResolver){
+        final Claims claims = getAllClaims(token);
+        return claimsResolver.apply(claims);
     }
     private Claims getAllClaims ( String token){
         return Jwts
@@ -50,10 +57,6 @@ public class JwtService {
         final String email = getEmailFromToken(token);
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-    public <T> T getClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims = getAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
      private Date getExpiration(String token){
         return getClaim(token, Claims::getExpiration);
      }
@@ -61,7 +64,20 @@ public class JwtService {
      private boolean isTokenExpired(String token){
         return getExpiration(token).before(new Date());
      }
+    public LocalDateTime extractExpiration(String token) {
+        Date expiration = getExpiration(token);
+        return expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
 
 
+    public String generateRefreshToken(UserDetails user) {
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 días
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
+    
 }

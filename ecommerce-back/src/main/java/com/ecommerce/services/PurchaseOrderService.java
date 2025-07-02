@@ -3,12 +3,14 @@ package com.ecommerce.services;
 import com.ecommerce.dto.PurchaseOrder.PurchaseOrderResponseDTO;
 import com.ecommerce.entities.PurchaseOrder;
 import com.ecommerce.entities.PurchaseOrderDetail;
+import com.ecommerce.entities.PurchaseOrderStateENUM;
 import com.ecommerce.mappers.PurchaseOrderMapper;
 import com.ecommerce.repositories.PurchaseOrderDetailRepository;
 import com.ecommerce.repositories.PurchaseOrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,5 +46,13 @@ public class PurchaseOrderService extends BaseService<PurchaseOrder, Long>{
         List<PurchaseOrderDetail> details = purchaseOrderDetailRepository.findByPurchaseOrderId(order.getId());
 
         return PurchaseOrderMapper.toDTO(order, details);
+    }
+    @Transactional
+    public void marcarComoPagada(Long orderId) throws Exception {
+        PurchaseOrder orden = (PurchaseOrder)this.purchaseOrderRepository.findById(orderId).orElseThrow(() -> {
+            return new Exception("No se encontró la orden con ID: " + orderId);
+        });
+        orden.setState(PurchaseOrderStateENUM.PAID);
+        this.purchaseOrderRepository.save(orden);
     }
 }

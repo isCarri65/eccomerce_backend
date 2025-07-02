@@ -1,45 +1,59 @@
 package com.ecommerce.services;
 
+import com.ecommerce.entities.PurchaseOrder;
+import com.ecommerce.entities.PurchaseOrderDetail;
+import com.ecommerce.repositories.*;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
 
+import com.ecommerce.repositories.PurchaseOrderDetailRepository;
+import com.ecommerce.repositories.PurchaseOrderRepository;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+import com.ecommerce.dto.CompraResponseDTO;
 import com.ecommerce.dto.ProductCompraDTO;
 import com.ecommerce.entities.*;
-import com.ecommerce.repositories.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-
 @Service
-public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail, Long>  {
-
-    private final ProductVariantRepository productVariantRepository;
-    private final DiscountRepository discountRepository;
+public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail, Long> {
     private final PurchaseOrderDetailRepository purchaseOrderDetailRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
+    private final ProductVariantRepository productVariantRepository;
+    private final DiscountRuleRepository discountRuleRepository;
 
-    public PurchaseOrderDetailService(PurchaseOrderDetailRepository purchaseOrderDetailRepository,
-                                      ProductVariantRepository productVariantRepository,
-                                      DiscountRepository discountRepository,
-                                      PurchaseOrderRepository purchaseOrderRepository) {
+    public PurchaseOrderDetailService(PurchaseOrderDetailRepository purchaseOrderDetailRepository,ProductVariantRepository productVariantRepository,
+                                      DiscountRuleRepository discountRuleRepository, PurchaseOrderRepository purchaseOrderRepository) {
         super(purchaseOrderDetailRepository);
         this.productVariantRepository = productVariantRepository;
-        this.discountRepository = discountRepository;
+        this.discountRuleRepository = discountRuleRepository;
         this.purchaseOrderDetailRepository = purchaseOrderDetailRepository;
         this.purchaseOrderRepository = purchaseOrderRepository;
+    }
+    public List<PurchaseOrderDetail> getAllByOrderIdAndUserId(Long id, Long userId) throws AccessDeniedException {
+        PurchaseOrder order = purchaseOrderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("PurchaseOrder not found"));
+        if (!order.getUser().getId().equals(userId)){
+            throw new AccessDeniedException("La orden no le pertenece al usuario");
+        }
+
+        return purchaseOrderDetailRepository.findByPurchaseOrderId(id);
     }
 
 
     @Transactional
-    public List<PurchaseOrderDetail> generarOrdenCompra(List<ProductCompraDTO> productosDTO) throws Exception {
+    public CompraResponseDTO generarOrdenCompra(List<ProductCompraDTO> productosDTO) throws Exception {
         List<PurchaseOrderDetail> detalles = new ArrayList<>();
-        double precioTotal = 0.0;
+        BigDecimal precioTotal = BigDecimal.ZERO;
 
         PurchaseOrder ordenCompra = PurchaseOrder.builder()
                 .date(LocalDate.now())
-                .finalPrice(0.0) // se actualizará al final
+                .finalPrice(BigDecimal.ZERO) // Cambiado a BigDecimal
+                .state(PurchaseOrderStateENUM.PENDING)
                 .build();
 
         purchaseOrderRepository.save(ordenCompra);
@@ -49,34 +63,48 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
                     .orElseThrow(() -> new Exception("No se encontró el ProductVariant con id: " + dto.getVariantId()));
 
             Product producto = pv.getProduct();
-            double precioBase = producto.getSellPrice();
 
-            Discount descuento = null;
-            double porcentajeDescuento = 0.0;
+            // Multiplicamos BigDecimal por cantidad (int)
+            BigDecimal precioUnitario = producto.getSellPrice();
+            BigDecimal cantidad = BigDecimal.valueOf(dto.getQuantityUser());
+            BigDecimal precioBase = precioUnitario.multiply(cantidad);
+
+            DiscountRule descuento = null;
+            BigDecimal porcentajeDescuento = BigDecimal.ZERO;
 
             if (dto.getDiscountId() != null) {
-                descuento = discountRepository.findById(dto.getDiscountId())
+                descuento = discountRuleRepository.findById(dto.getDiscountId())
                         .orElseThrow(() -> new Exception("No se encontró el Discount con id: " + dto.getDiscountId()));
-                porcentajeDescuento = descuento.getPercentage();
+                porcentajeDescuento = BigDecimal.valueOf(descuento.getPercentage());
             }
 
-            double precioFinal = precioBase * (1 - porcentajeDescuento / 100.0);
+            // precioFinal = precioBase * (1 - porcentajeDescuento / 100)
+            BigDecimal descuentoFactor = BigDecimal.ONE.subtract(porcentajeDescuento.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
+            BigDecimal precioFinal = precioBase.multiply(descuentoFactor).setScale(2, RoundingMode.HALF_UP);
 
             PurchaseOrderDetail detalle = PurchaseOrderDetail.builder()
                     .purchaseOrder(ordenCompra)
                     .productVariant(pv)
-                    .quantity(1)
-                    .unitPrice(precioFinal)
+                    .quantity(dto.getQuantityUser())
+                    .unitPrice(precioUnitario)
                     .totalPrice(precioFinal)
                     .discount(descuento)
                     .build();
 
             detalles.add(detalle);
-            precioTotal += precioFinal;
+            precioTotal = precioTotal.add(precioFinal);
+
+            if (pv.getQuantity() < dto.getQuantityUser()) {
+                throw new Exception("Stock insuficiente para el ProductVariant con id: " + dto.getVariantId());
+            }
+            pv.setQuantity(pv.getQuantity() - dto.getQuantityUser());
+            productVariantRepository.save(pv);
         }
 
-        ordenCompra.setFinalPrice(precioTotal);
+        ordenCompra.setFinalPrice(precioTotal.setScale(2, RoundingMode.HALF_UP));
         purchaseOrderRepository.save(ordenCompra);
-        return purchaseOrderDetailRepository.saveAll(detalles);
+        List<PurchaseOrderDetail> detallesGuardados = purchaseOrderDetailRepository.saveAll(detalles);
+
+        return new CompraResponseDTO(ordenCompra.getId(), detallesGuardados);
     }
 }
