@@ -1,7 +1,9 @@
 
 package com.ecommerce.controllers.publicControllers;
 
+import com.ecommerce.dto.Discount.DiscountRuleDTO;
 import com.ecommerce.entities.DiscountRule;
+import com.ecommerce.mappers.DiscountRuleMapper;
 import com.ecommerce.services.DiscountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,22 +15,11 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/public/discounts")
-public class DiscountPublicController {
-    private final DiscountService service;
+public class DiscountPublicController extends BasePublicController<DiscountRule, Long, DiscountRuleDTO> {
 
-    public DiscountPublicController(DiscountService service) {
-        this.service = service;
+    public DiscountPublicController(DiscountService service, DiscountRuleMapper mapper) {
+        super(service,mapper );
     }
 
-    @GetMapping
-    public ResponseEntity<Set<DiscountRule>> getAllActives() {
-        return ResponseEntity.ok(service.getAllActives());
-    }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DiscountRule> getByIdActives(@PathVariable Long id) {
-        return service.findByIdActive(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
 }

@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class FileUploadResponse {
     private String imageUrl;
     private String publicId;
+
 }

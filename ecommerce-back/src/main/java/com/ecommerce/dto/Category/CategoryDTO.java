@@ -21,6 +21,6 @@ public class CategoryDTO {
     private Long id;
     private String name;
     private String imageUrl;
-
+    private List<String> tags;
     private TypeDTO type;
 }

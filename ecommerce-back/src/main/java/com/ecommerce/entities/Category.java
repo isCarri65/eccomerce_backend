@@ -17,10 +17,14 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 @Builder
+
 public class Category extends Base{
     private String name;
     private String imageUrl;
     private String publicId;
+
+    @ElementCollection
+    private List<String> tags; // Ej: ["fútbol", "clubes", "deporte"]
 
     @ManyToOne
     @JoinColumn(name = "type_id")

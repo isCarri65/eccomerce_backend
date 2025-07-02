@@ -21,6 +21,7 @@ public class CategoryAdminMapper implements BaseAdminMapper<Category, CategoryAd
         dto.setName(category.getName());
         dto.setImageUrl(category.getImageUrl());
         dto.setPublicId(category.getPublicId());
+        dto.setTags(category.getTags());
         if (category.getType() != null) {
             dto.setType(typeMapper.toDTO(category.getType()));
         }
@@ -33,6 +34,7 @@ public class CategoryAdminMapper implements BaseAdminMapper<Category, CategoryAd
         category.setImageUrl(updateDTO.getImageUrl());
         category.setPublicId(updateDTO.getPublicId());
         category.setDeleted(updateDTO.isDeleted());
+        category.setTags(updateDTO.getTags());
         Type type = new Type();
         type.setId(updateDTO.getTypeId());
         category.setType(type);
@@ -43,6 +45,7 @@ public class CategoryAdminMapper implements BaseAdminMapper<Category, CategoryAd
         category.setName(categoryDTO.getName());
         category.setImageUrl(categoryDTO.getImageUrl());
         category.setPublicId(categoryDTO.getPublicId());
+        category.setTags(categoryDTO.getTags());
         Type type = new Type();
         type.setId(categoryDTO.getTypeId());
         category.setType(type);
