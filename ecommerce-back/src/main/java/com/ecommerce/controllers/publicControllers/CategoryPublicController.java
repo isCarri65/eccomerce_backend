@@ -7,10 +7,7 @@ import com.ecommerce.mappers.CategoryMapper;
 import com.ecommerce.services.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +25,11 @@ public class CategoryPublicController extends BasePublicController<Category, Lon
     @GetMapping("/getAllByTypeId/{id}")
     public ResponseEntity<List<CategoryDTO>> getAllByTypeId(@PathVariable Long id){
         return ResponseEntity.ok(categoryService.getAllByTypeId(id));
+    }
+    @GetMapping("/byTag")
+    public ResponseEntity<List<CategoryDTO>> getCategoriesByTag(@RequestParam String tag) {
+        List<CategoryDTO> result = categoryService.getCategoriesByTag(tag);
+        return ResponseEntity.ok(result);
     }
 }
 

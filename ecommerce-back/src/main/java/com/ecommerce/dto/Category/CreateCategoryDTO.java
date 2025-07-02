@@ -17,6 +17,6 @@ public class CreateCategoryDTO {
     private String name;
     private String imageUrl;
     private String publicId;
-
+    private List<String> tags;
     private Long typeId;
 }

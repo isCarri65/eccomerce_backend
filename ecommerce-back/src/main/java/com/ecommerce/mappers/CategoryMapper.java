@@ -19,6 +19,7 @@ public class CategoryMapper implements BaseMapper<Category, CategoryDTO> {
         if (category.getType() != null) {
             dto.setType(typeMapper.toDTO(category.getType()));
         }
+        dto.setTags(category.getTags());
         return dto;
 
     }

@@ -20,5 +20,7 @@ public class CategoryAdminDTO {
     private String imageUrl;
     private String publicId;
     private boolean deleted;
+
+    private List<String> tags;
     private TypeDTO type;
 }
