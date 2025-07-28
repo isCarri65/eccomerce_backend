@@ -20,6 +20,7 @@ public class EcommerceBackendApplication {
         SpringApplication.run(EcommerceBackendApplication.class, args);
         System.out.println("Ecommerce Backend Application Started");
     }
+    /*
     @Bean
     public CommandLineRunner run(
             CategoryRepository categoryRepository,
@@ -97,9 +98,10 @@ public class EcommerceBackendApplication {
 
             System.out.println("Productos y variantes creados exitosamente.");
         };
+
     }
 
-
+    */
 
 
 }

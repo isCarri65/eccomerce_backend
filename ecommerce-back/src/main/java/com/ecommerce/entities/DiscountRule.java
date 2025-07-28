@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.Set;
 public class DiscountRule extends Base{
     private LocalDate startDate;
     private LocalDate endDate;
-    private Double percentage;
+    private BigDecimal percentage;
     private Boolean state;
 
     @ManyToOne

@@ -26,10 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class ProductService extends BaseService<Product, Long> {
@@ -39,6 +37,8 @@ public class ProductService extends BaseService<Product, Long> {
     private final ProductMapper productMapper;
     private final ProductGalleryService productGalleryService;
     private final ProductVariantMapper productVariantMapper;
+    private final ProductPricingCalculator productPricingCalculator;
+
 
     private final CategoryMapper categoryMapper;
 
@@ -48,7 +48,8 @@ public class ProductService extends BaseService<Product, Long> {
                           ProductMapper productMapper,
                           ProductGalleryService productGalleryService,
                           CategoryMapper categoryMapper,
-                          ProductVariantMapper productVariantMapper) {
+                          ProductVariantMapper productVariantMapper,
+                          ProductPricingCalculator productPricingCalculator) {
         super(productRepository);
         this.productRepository = productRepository;
         this.productAdminMapper = productAdminMapper;
@@ -57,6 +58,7 @@ public class ProductService extends BaseService<Product, Long> {
         this.productGalleryService = productGalleryService;
         this.categoryMapper = categoryMapper;
         this.productVariantMapper = productVariantMapper;
+        this.productPricingCalculator = productPricingCalculator;
     }
 
     @Transactional(readOnly = true)
@@ -91,12 +93,7 @@ public class ProductService extends BaseService<Product, Long> {
         productGalleryService.createEntitiesWhitDTOS(productGalleryDTOS);
         return productAdminMapper.toDTO(product);
     }
-/*
-    @Transactional
-    public ProductAdminDTO createProduct(CreateProductDTO createProductDTO) {
-        Product product =productAdminMapper.CDTOtoEntity(createProductDTO);
-        return product;
-    }*/
+
 
     @Transactional
     public ProductListDTO getProductListDTO(Product product) {
@@ -117,7 +114,7 @@ public class ProductService extends BaseService<Product, Long> {
 
         if (discountOpt.isPresent()) {
             DiscountRule discount = discountOpt.get();
-            BigDecimal discountAmount = basePrice.multiply(BigDecimal.valueOf(discount.getPercentage() / 100));
+            BigDecimal discountAmount = basePrice.multiply((discount.getPercentage()));
             dto.setPrice(basePrice.subtract(discountAmount));
             dto.setOriginalPrice(basePrice);
             dto.setDiscountPercentage(discount.getPercentage());
@@ -153,4 +150,50 @@ public class ProductService extends BaseService<Product, Long> {
         // En ProductService:
 
     }
+
+    public Page<Product> searchProductsByName(String name, Pageable pageable) {
+        return productRepository.searchByNameOrDescription(name, pageable );
+    }
+
+    @Override
+    @Transactional
+    public Product create(Product entity) {
+        productPricingCalculator.updateCalculatedAtributes(entity);
+        return super.create(entity); // guarda usando lógica base
+    }
+
+    @Override
+    @Transactional
+    public Product update(Long id, Product entity) {
+        if (!baseRepository.existsById(id)) {
+            throw new EntityNotFoundException("Producto no encontrado");
+        }
+        entity.setId(id);
+        productPricingCalculator.updateCalculatedAtributes(entity);
+        return super.update(id, entity);
+    }
+
+    @Override
+    @Transactional
+    public <EntityDTO, CreateDTO, UpdateDTO> EntityDTO create(
+            CreateDTO dto,
+            BaseAdminMapper<Product, EntityDTO, CreateDTO, UpdateDTO> mapper) {
+
+        Product entity = mapper.CDTOtoEntity(dto);
+        productPricingCalculator.updateCalculatedAtributes(entity);
+        Product saved = baseRepository.save(entity);
+        return mapper.toDTO(saved);
+    }
+
+    @Transactional
+    public <EntityDTO, CreateDTO, UpdateDTO> EntityDTO update(Long id, UpdateDTO dto, BaseAdminMapper<Product, EntityDTO, CreateDTO, UpdateDTO> mapper) {
+        Product entity = baseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Entidad no encontrada para actualizar"));
+
+        //actualizamos la entidad
+        mapper.UDTOtoEntity(dto, entity);
+        productPricingCalculator.updateCalculatedAtributes(entity);
+        return mapper.toDTO(baseRepository.save(entity));
+    }
+
 }

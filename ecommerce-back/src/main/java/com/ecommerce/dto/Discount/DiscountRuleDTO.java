@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
@@ -20,7 +21,7 @@ public class DiscountRuleDTO {
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Double percentage;
+    private BigDecimal percentage;
     private Boolean state;
     private Long categoryId;
 

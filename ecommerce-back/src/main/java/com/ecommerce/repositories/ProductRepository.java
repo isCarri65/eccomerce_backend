@@ -1,5 +1,6 @@
 package com.ecommerce.repositories;
 
+import com.ecommerce.entities.Category;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.ProductGenreENUM;
 import lombok.NonNull;
@@ -37,8 +38,8 @@ JOIN pv.color c
 JOIN p.categories cat
 JOIN cat.type t
 WHERE (:genre IS NULL OR p.genre = :genre)
-  AND (:minPrice IS NULL OR p.sellPrice >= :minPrice)
-  AND (:maxPrice IS NULL OR p.sellPrice <= :maxPrice)
+  AND (:minPrice IS NULL OR p.finalPrice >= :minPrice)
+  AND (:maxPrice IS NULL OR p.finalPrice <= :maxPrice)
   AND (:sizeId IS NULL OR s.id = :sizeId)
   AND (:colorId IS NULL OR c.id = :colorId)
   AND (:typeId IS NULL OR t.id = :typeId)
@@ -60,6 +61,16 @@ HAVING (:categoryIds IS NULL OR COUNT(DISTINCT cat.id) = :categoryCount)
             @Param("typeId") Long typeId,
             Pageable pageable
     );
+    @Query("""
+    Select p From Product p
+    WHERE LOWER(p.name) LIKE LOWER(CONCAT("%", :term, "%"))
+    OR LOWER(p.description) LIKE LOWER(CONCAT("%", :term, "%") )
+""")
+    Page<Product> searchByNameOrDescription(@Param("term") String term, Pageable pageable);
 
-
+    @Query("""
+    SELECT p FROM Product p
+    WHERE :category MEMBER OF p.categories
+    """)
+    Set<Product> findProductsByCategory(@Param("category") Category category);
 }
