@@ -16,7 +16,7 @@ public class ProductListDTO {
     private String genre;
     private BigDecimal price;
     private BigDecimal originalPrice;
-    private Double discountPercentage;
+    private BigDecimal discountPercentage;
     private boolean stockAvailable;
     private Set<CategoryDTO> categories; // Full category objects for the frontend
     private String imageUrl;

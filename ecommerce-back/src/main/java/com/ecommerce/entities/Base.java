@@ -1,18 +1,19 @@
 package com.ecommerce.entities;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @SuperBuilder
+@Getter
 public abstract class Base implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -20,15 +21,14 @@ public abstract class Base implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "deleted")
+    @Builder.Default
+    @Column(name = "deleted", columnDefinition = "BOOLEAN DEFAULT FALSE")
     protected boolean deleted = false;
-    public Long getId() {
-        return id;
-    }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;

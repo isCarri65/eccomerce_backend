@@ -79,7 +79,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
             if (dto.getDiscountId() != null) {
                 descuento = discountRuleRepository.findById(dto.getDiscountId())
                         .orElseThrow(() -> new Exception("No se encontró el Discount con id: " + dto.getDiscountId()));
-                porcentajeDescuento = BigDecimal.valueOf(descuento.getPercentage());
+                porcentajeDescuento = descuento.getPercentage();
             }
 
             // precioFinal = precioBase * (1 - porcentajeDescuento / 100)

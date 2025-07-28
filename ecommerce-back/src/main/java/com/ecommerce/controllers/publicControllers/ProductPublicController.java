@@ -21,9 +21,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/public/products")
 public class ProductPublicController {
     private final ProductService service;
+    private final ProductService productService;
 
-    public ProductPublicController(ProductService service) {
+    public ProductPublicController(ProductService service, ProductService productService) {
         this.service = service;
+        this.productService = productService;
     }
 
     @GetMapping("/{id}") // Doble llave para escapar en format()
@@ -49,6 +51,11 @@ public class ProductPublicController {
     ) {
         return ResponseEntity.ok(service.getFilteredProducts(filter, pageable)
                 .map(service::getProductListDTO));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductListDTO>> getSearchedProducts(@RequestParam String search, Pageable pageable) {
+        return ResponseEntity.ok(productService.searchProductsByName(search, pageable).map(service::getProductListDTO));
     }
 
 }

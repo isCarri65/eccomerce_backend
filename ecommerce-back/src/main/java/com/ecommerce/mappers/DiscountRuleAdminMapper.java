@@ -20,8 +20,8 @@ public class DiscountRuleAdminMapper implements BaseAdminMapper<DiscountRule, Di
         dto.setStartDate(discountRule.getStartDate());
         dto.setEndDate(discountRule.getEndDate());
 
-        dto.setProductId(discountRule.getProduct().getId());
-        dto.setCategoryId(discountRule.getCategory().getId());
+        dto.setProductId(discountRule.getProduct() != null ? discountRule.getProduct().getId() : null);
+        dto.setCategoryId(discountRule.getCategory() != null ? discountRule.getCategory().getId(): null);
         return dto;
     }
     public DiscountRule CDTOtoEntity(CreateDiscountRuleDTO dto) {
@@ -31,14 +31,18 @@ public class DiscountRuleAdminMapper implements BaseAdminMapper<DiscountRule, Di
         discountRule.setPercentage(dto.getPercentage());
         discountRule.setStartDate(dto.getStartDate());
         discountRule.setEndDate(dto.getEndDate());
+        if (dto.getProductId() != null) {
 
-        Product product = new Product();
-        product.setId(dto.getProductId());
-        discountRule.setProduct(product);
+            Product product = new Product();
+            product.setId(dto.getProductId());
+            discountRule.setProduct(product);
+        }
 
-        Category category = new Category();
-        category.setId(dto.getCategoryId());
-        discountRule.setCategory(category);
+        if (dto.getCategoryId() != null) {
+            Category category = new Category();
+            category.setId(dto.getCategoryId());
+            discountRule.setCategory(category);
+        }
         return discountRule;
     }
 
@@ -49,12 +53,24 @@ public class DiscountRuleAdminMapper implements BaseAdminMapper<DiscountRule, Di
         discountRule.setEndDate(dto.getEndDate());
         discountRule.setDeleted(dto.getDeleted());
 
-        Product product = new Product();
-        product.setId(dto.getProductId());
-        discountRule.setProduct(product);
-        Category category = new Category();
-        category.setId(dto.getCategoryId());
-        discountRule.setCategory(category);
+        if (dto.getProductId() != null) {
+            Product product = new Product();
+            product.setId(dto.getProductId());
+
+            discountRule.setProduct(product);
+        } else {
+            discountRule.setProduct(null);
+        }
+
+        if (dto.getCategoryId() != null) {
+
+            Category category = new Category();
+            category.setId(dto.getCategoryId());
+
+            discountRule.setCategory(category);
+        } else {
+            discountRule.setCategory(null);
+        }
 
 
     }
