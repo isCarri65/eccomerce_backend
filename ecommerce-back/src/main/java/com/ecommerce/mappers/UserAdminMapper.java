@@ -18,6 +18,8 @@ public class UserAdminMapper implements BaseAdminMapper<User, UserAdminDTO, Crea
         dto.setId(user.getId());
         dto.setLastName(user.getLastName());
         dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
         dto.setBirthDate(user.getBirthDate());
         dto.setRole(String.valueOf(user.getRole()));
         dto.setEnabled(user.isEnabled());

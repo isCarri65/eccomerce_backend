@@ -2,10 +2,12 @@ package com.ecommerce.mappers;
 import com.ecommerce.dto.User.UpdateUserDTO;
 import com.ecommerce.dto.User.UserDTO;
 import com.ecommerce.entities.User;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserProfileMapper {
 
-    public static UserDTO toDTO(User user) {
+    public UserDTO toDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setLastName(user.getLastName());
@@ -17,7 +19,7 @@ public class UserProfileMapper {
         return dto;
     }
 
-    public static void updateUserFromDTO(UpdateUserDTO dto, User user) {
+    public void updateUserFromDTO(UpdateUserDTO dto, User user) {
         user.setBirthDate(dto.getBirthDate());
         user.setLastName(dto.getLastName());
         user.setName(dto.getName());

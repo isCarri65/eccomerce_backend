@@ -28,6 +28,7 @@ public class AuthService {
     private final JwtService jwtService; // Usar solo uno, eliminé duplicado jWTService
     private final PasswordEncoder passwordEncoder;
     private final TokenBlackListService tokenBlackListService;
+    private final UserProfileMapper userProfileMapper;
 
     public JwtResponse login(LoginRequest request) throws EntityNotFoundException {
         authenticationManager.authenticate(
@@ -37,7 +38,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        UserDTO userDTO = UserProfileMapper.toDTO(user);
+        UserDTO userDTO = userProfileMapper.toDTO(user);
         userDTO.setRole(user.getRole().name());
 
         String accessToken = jwtService.getToken(user);
@@ -64,7 +65,7 @@ public class AuthService {
                 .build();
         User userCreated = userRepository.save(user);
 
-        UserDTO userDTO = UserProfileMapper.toDTO(userCreated);
+        UserDTO userDTO = userProfileMapper.toDTO(userCreated);
         userDTO.setRole(user.getRole().name());
 
         String accessToken = jwtService.getToken(userCreated);
@@ -106,7 +107,7 @@ public class AuthService {
 
         String newRefreshToken = jwtService.generateRefreshToken(user); // rotar el refresh opcional
 
-        UserDTO userDTO = UserProfileMapper.toDTO(user);
+        UserDTO userDTO = userProfileMapper.toDTO(user);
         userDTO.setRole(user.getRole().name());
 
         return JwtResponse.builder()
