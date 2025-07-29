@@ -1,6 +1,7 @@
 package com.ecommerce.services;
 
 import com.ecommerce.dto.PurchaseOrder.PurchaseOrderResponseDTO;
+import com.ecommerce.dto.PurchaseOrder.PurchaseOrderResponseFullDTO;
 import com.ecommerce.entities.PurchaseOrder;
 import com.ecommerce.entities.PurchaseOrderDetail;
 import com.ecommerce.entities.PurchaseOrderStateENUM;
@@ -20,11 +21,13 @@ import java.util.stream.Collectors;
 public class PurchaseOrderService extends BaseService<PurchaseOrder, Long>{
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final PurchaseOrderDetailRepository purchaseOrderDetailRepository;
+    private final PurchaseOrderMapper purchaseOrderMapper;
 
-    public PurchaseOrderService( PurchaseOrderRepository purchaseOrderRepository, PurchaseOrderDetailRepository purchaseOrderDetailRepository) {
+    public PurchaseOrderService( PurchaseOrderRepository purchaseOrderRepository, PurchaseOrderMapper purchaseOrderMapper, PurchaseOrderDetailRepository purchaseOrderDetailRepository) {
         super(purchaseOrderRepository);
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.purchaseOrderDetailRepository = purchaseOrderDetailRepository;
+        this.purchaseOrderMapper = purchaseOrderMapper;
     }
 
     public List<PurchaseOrderResponseDTO> getAllByUserId(Long userId){
@@ -33,10 +36,19 @@ public class PurchaseOrderService extends BaseService<PurchaseOrder, Long>{
 
         for (PurchaseOrder order : orders) {
             List<PurchaseOrderDetail> details = purchaseOrderDetailRepository.findByPurchaseOrderId(order.getId());
-            dtos.add(PurchaseOrderMapper.toDTO(order, details));
+            dtos.add(purchaseOrderMapper.toDTO(order, details));
         }
         return dtos;
     }
+
+    @Transactional
+    public PurchaseOrderResponseFullDTO getPurchaseOrderFullById(Long orderId){
+        PurchaseOrder order =  purchaseOrderRepository.findById(orderId).orElseThrow(() -> new  EntityNotFoundException("Purchase Order not found"));
+        List<PurchaseOrderDetail> details = purchaseOrderDetailRepository.findByPurchaseOrderId(orderId);
+        return purchaseOrderMapper.toFullDTO(order, details);
+    }
+
+
 
     public PurchaseOrderResponseDTO getPurchaseOrderById(Long id) {
         PurchaseOrder order = purchaseOrderRepository.findById(id)
@@ -45,7 +57,7 @@ public class PurchaseOrderService extends BaseService<PurchaseOrder, Long>{
         // Cargar detalles desde su repositorio
         List<PurchaseOrderDetail> details = purchaseOrderDetailRepository.findByPurchaseOrderId(order.getId());
 
-        return PurchaseOrderMapper.toDTO(order, details);
+        return purchaseOrderMapper.toDTO(order, details);
     }
     @Transactional
     public void marcarComoPagada(Long orderId) throws Exception {

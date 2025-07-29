@@ -1,5 +1,7 @@
 package com.ecommerce.dto.PurchaseOrderDetail;
 
+import com.ecommerce.dto.Product.ProductDTO;
+import com.ecommerce.dto.productVariant.ProductVariantDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +13,13 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PurchaseOrderDetailDTO {
+public class PurchaseOrderDetailFullDTO {
     private Long id;
+    private Long orderId;
     private Integer quantity;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
-    private Long productVariantId;
+    private ProductVariantDTO productVariantDTO;
+    private ProductDTO productDTO;
     private Long discountId;
 }

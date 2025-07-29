@@ -132,8 +132,8 @@ public class ProductService extends BaseService<Product, Long> {
         List<Long> categoryIds = filter.getCategoryIds();
 
         // Limitar la cantidad de categorías a 3 si se pasa más
-        if (categoryIds != null && categoryIds.size() > 3) {
-            categoryIds = categoryIds.subList(0, 3);
+        if (categoryIds != null && categoryIds.size() > 10) {
+            categoryIds = categoryIds.subList(0, 10);
         }
 
         return productRepository.findFilteredProducts(

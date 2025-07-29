@@ -5,14 +5,15 @@ import com.ecommerce.dto.Product.ProductDTO;
 import com.ecommerce.dto.Product.ProductListDTO;
 import com.ecommerce.dto.ProductFilterDTO;
 import com.ecommerce.dto.productVariant.ProductVariantDTO;
-import com.ecommerce.entities.Product;
 import com.ecommerce.services.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import java.beans.PropertyEditorSupport;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,6 +58,21 @@ public class ProductPublicController {
     public ResponseEntity<Page<ProductListDTO>> getSearchedProducts(@RequestParam String search, Pageable pageable) {
         return ResponseEntity.ok(productService.searchProductsByName(search, pageable).map(service::getProductListDTO));
     }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(List.class, "categoryIds", new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                List<Long> ids = Arrays.stream(text.split(","))
+                        .filter(s -> !s.isBlank())
+                        .map(Long::parseLong)
+                        .collect(Collectors.toList());
+                setValue(ids);
+            }
+        });
+    }
+
 
 }
 

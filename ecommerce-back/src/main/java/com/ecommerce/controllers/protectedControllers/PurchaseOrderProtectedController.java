@@ -23,10 +23,16 @@ public class PurchaseOrderProtectedController {
     }
 
 
-    @GetMapping("/getAll")
+    @GetMapping
     public ResponseEntity<List<PurchaseOrderResponseDTO>> getAll() {
         User user = userService.getCurrentUser();
         return ResponseEntity.ok(purchaseOrderService.getAllByUserId(user.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PurchaseOrderResponseDTO> getPurchaseOrderFullById(@PathVariable Long id) {
+        User user = userService.getCurrentUser();
+        return ResponseEntity.ok(purchaseOrderService.getPurchaseOrderById(id));
     }
 
     /*

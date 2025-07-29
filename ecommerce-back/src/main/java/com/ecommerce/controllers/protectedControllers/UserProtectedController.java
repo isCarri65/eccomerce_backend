@@ -13,23 +13,26 @@ import org.springframework.web.bind.annotation.*;
 public class UserProtectedController {
 
     private final UserService userService;
+    private final UserProfileMapper userProfileMapper;
 
-    public UserProtectedController(UserService service) {
+    public UserProtectedController(UserService service, UserProfileMapper mapper) {
+
         this.userService = service;
+        this.userProfileMapper = mapper;
     }
     @GetMapping("/profile")
     public ResponseEntity<UserDTO> getMyProfile() {
         User user = userService.getCurrentUser();
         // Ya no hay riesgo de null
-        return ResponseEntity.ok(UserProfileMapper.toDTO(user));
+        return ResponseEntity.ok(userProfileMapper.toDTO(user));
     }
 
     @PutMapping("/profile")
     public ResponseEntity<UserDTO> updateMyProfile(@RequestBody UpdateUserDTO userDTO){
         User user = userService.getCurrentUser();
-        UserProfileMapper.updateUserFromDTO(userDTO, user);
+        userProfileMapper.updateUserFromDTO(userDTO, user);
         User updatedUser = userService.update(user.getId(), user);
-        return ResponseEntity.ok(UserProfileMapper.toDTO(updatedUser));
+        return ResponseEntity.ok(userProfileMapper.toDTO(updatedUser));
     }
 
 
