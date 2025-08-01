@@ -5,6 +5,5 @@ import lombok.Data;
 @Data
 public class ProductCompraDTO {
     private Long variantId;
-    private Long discountId; // puede ser null
     private Integer quantityUser;
 }

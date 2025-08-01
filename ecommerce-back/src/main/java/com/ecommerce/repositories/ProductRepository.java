@@ -47,8 +47,9 @@ WHERE (:genre IS NULL OR p.genre = :genre)
   AND pv.state = true
   AND pv.quantity > 0
   AND (:categoryIds IS NULL OR cat.id IN :categoryIds)
+  AND (:term IS NULL OR (LOWER(p.name) LIKE LOWER(CONCAT("%", :term, "%"))
+    OR LOWER(p.description) LIKE LOWER(CONCAT("%", :term, "%") )))
 GROUP BY p.id
-HAVING (:categoryIds IS NULL OR COUNT(DISTINCT cat.id) = :categoryCount)
 """)
     Page<Product> findFilteredProducts(
             @Param("genre") ProductGenreENUM genre,
@@ -59,12 +60,13 @@ HAVING (:categoryIds IS NULL OR COUNT(DISTINCT cat.id) = :categoryCount)
             @Param("categoryIds") List<Long> categoryIds,
             @Param("categoryCount") long categoryCount,
             @Param("typeId") Long typeId,
+            @Param("term") String term,
             Pageable pageable
     );
     @Query("""
     Select p From Product p
-    WHERE LOWER(p.name) LIKE LOWER(CONCAT("%", :term, "%"))
-    OR LOWER(p.description) LIKE LOWER(CONCAT("%", :term, "%") )
+    WHERE (LOWER(p.name) LIKE LOWER(CONCAT("%", :term, "%"))
+    OR LOWER(p.description) LIKE LOWER(CONCAT("%", :term, "%") ))
 """)
     Page<Product> searchByNameOrDescription(@Param("term") String term, Pageable pageable);
 

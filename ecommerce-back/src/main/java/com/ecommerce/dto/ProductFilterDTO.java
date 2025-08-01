@@ -15,4 +15,5 @@ public class ProductFilterDTO {
     private Long colorId;
     private List<Long> categoryIds;
     private Long typeId;
+    private String searchTerm;
 }

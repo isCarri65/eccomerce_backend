@@ -31,7 +31,7 @@ public class AddressProtectedController {
     }
 
 
-    @GetMapping("/getAll")
+    @GetMapping("")
     public ResponseEntity<List<AddressDTO>> getAll() {
         User user = userService.getCurrentUser();
         List<Address> addresses = addressService.getAllByUserId(user.getId());
