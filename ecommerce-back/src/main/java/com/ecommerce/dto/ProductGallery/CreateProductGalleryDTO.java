@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CreateProductGalleryDTO {
+    private String name;
     private String imageUrl;
     private Boolean isMain;
     private Long productId;

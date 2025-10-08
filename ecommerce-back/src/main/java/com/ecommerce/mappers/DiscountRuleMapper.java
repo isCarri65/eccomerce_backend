@@ -13,9 +13,8 @@ public class DiscountRuleMapper implements BaseMapper<DiscountRule, DiscountRule
         dto.setPercentage(discountRule.getPercentage());
         dto.setStartDate(discountRule.getStartDate());
         dto.setEndDate(discountRule.getEndDate());
-
-        dto.setProductId(discountRule.getProduct().getId());
-        dto.setCategoryId(discountRule.getCategory().getId());
+        if(discountRule.getProduct() != null) dto.setProductId(discountRule.getProduct().getId());
+        if(discountRule.getCategory() != null) dto.setCategoryId(discountRule.getCategory().getId());
         return dto;
     }
 }

@@ -55,6 +55,7 @@ public class ProductAdminMapper implements BaseAdminMapper<Product, ProductAdmin
                 .collect(Collectors.toSet());
 
         dto.setCategories(categoryDTOS);
+
         return dto;
     }
     // Convert CreateDTO to Product entity
@@ -69,7 +70,8 @@ public class ProductAdminMapper implements BaseAdminMapper<Product, ProductAdmin
                 .description(dto.getDescription())
                 .state(dto.getState())
                 .genre(ProductGenreENUM.fromString(dto.getGenre())) // convert String to Enum
-                .categories(categories) // loaded categories from IDs
+                .categories(categories)
+                .finalPrice(dto.getSellPrice())// loaded categories from IDs
                 .build();
     }
 

@@ -5,6 +5,9 @@ import com.ecommerce.entities.PurchaseOrderDetail;
 import com.ecommerce.repositories.*;
 import com.thoughtworks.qdox.model.expression.Add;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.repositories.PurchaseOrderDetailRepository;
@@ -21,6 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail, Long> {
     private final PurchaseOrderDetailRepository purchaseOrderDetailRepository;
@@ -69,23 +76,21 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
             Product producto = pv.getProduct();
 
             // Multiplicamos BigDecimal por cantidad (int)
-            BigDecimal precioUnitario = producto.getSellPrice();
+            BigDecimal precioUnitario = producto.getFinalPrice();
             BigDecimal cantidad = BigDecimal.valueOf(dto.getQuantityUser());
-            BigDecimal precioBase = precioUnitario.multiply(cantidad);
+            BigDecimal precioFinal = precioUnitario.multiply(cantidad);
+
 
             DiscountRule descuento = null;
-            BigDecimal porcentajeDescuento = BigDecimal.ZERO;
-
-            if (dto.getDiscountId() != null) {
-                descuento = discountRuleRepository.findById(dto.getDiscountId())
-                        .orElseThrow(() -> new Exception("No se encontró el Discount con id: " + dto.getDiscountId()));
-                porcentajeDescuento = descuento.getPercentage();
+            List<Long> categoriesId = producto.getCategories().stream().map(Category::getId).toList();
+            Pageable findOne = PageRequest.of(0, 1);
+            Optional<DiscountRule> descuentoOption = discountRuleRepository.obtenerMejorDescuento(producto.getId(), categoriesId, findOne).stream().findFirst();
+            if (pv.getQuantity() < dto.getQuantityUser()) {
+                throw new Exception("Stock insuficiente para el ProductVariant con id: " + dto.getVariantId());
             }
-
-            // precioFinal = precioBase * (1 - porcentajeDescuento / 100)
-            BigDecimal descuentoFactor = BigDecimal.ONE.subtract(porcentajeDescuento.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
-            BigDecimal precioFinal = precioBase.multiply(descuentoFactor).setScale(2, RoundingMode.HALF_UP);
-
+            if (descuentoOption.isPresent()) {
+                descuento = descuentoOption.get();
+            }
             PurchaseOrderDetail detalle = PurchaseOrderDetail.builder()
                     .purchaseOrder(ordenCompra)
                     .productVariant(pv)
@@ -98,9 +103,7 @@ public class PurchaseOrderDetailService extends BaseService<PurchaseOrderDetail,
             detalles.add(detalle);
             precioTotal = precioTotal.add(precioFinal);
 
-            if (pv.getQuantity() < dto.getQuantityUser()) {
-                throw new Exception("Stock insuficiente para el ProductVariant con id: " + dto.getVariantId());
-            }
+
             pv.setQuantity(pv.getQuantity() - dto.getQuantityUser());
             productVariantRepository.save(pv);
         }

@@ -6,8 +6,10 @@ import com.ecommerce.services.AddressService;
 import com.ecommerce.services.PurchaseOrderDetailService;
 import com.ecommerce.services.PurchaseOrderService;
 import com.ecommerce.services.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.*;
+import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;
 
 import lombok.RequiredArgsConstructor;
@@ -46,7 +48,7 @@ public class MercadoPagoController {
         for (PurchaseOrderDetail detalle : detalles) {
             Product producto = detalle.getProductVariant().getProduct();
             PreferenceItemRequest item = PreferenceItemRequest.builder()
-                    .id(producto.getId().toString())
+                    .id(detalle.getId().toString())
                     .title(producto.getName())
                     .description(producto.getDescription())
                     .quantity(detalle.getQuantity())
@@ -57,31 +59,31 @@ public class MercadoPagoController {
         }
         //MALA PRACTICA DE PROGRAMACIÓN LAS URL SIEMPRE VAN EN ENV O ARCHIVO CONFIG
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://localhost:5173/paymentSuccess")
-                .pending("https://localhost:5173/")
-                .failure("https://localhost:5173/paymentFailure")
+                .success("http://localhost:5173/paymentSuccess")
+                .pending("http://localhost:5173/")
+                .failure("http://localhost:5173/paymentFailure")
                 .build();
+            List<PreferencePaymentTypeRequest> excludedPaymentTypes = List.of(
+                    PreferencePaymentTypeRequest.builder().id("ticket").build()
+            );
 
-        List<PreferencePaymentTypeRequest> excludedPaymentTypes = List.of(
-                PreferencePaymentTypeRequest.builder().id("ticket").build()
-        );
+            PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
+                    .excludedPaymentTypes(excludedPaymentTypes)
+                    .installments(1)
+                    .build();
 
-        PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
-                .excludedPaymentTypes(excludedPaymentTypes)
-                .installments(1)
-                .build();
+            PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                    .items(items)
+                    .backUrls(backUrls)
+                    .paymentMethods(paymentMethods)
+                    .autoReturn("approved")
+                    .externalReference(orderId.toString())
+                    .build();
+            System.out.println(new ObjectMapper().writeValueAsString(preferenceRequest));
 
-        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
-                .items(items)
-                .backUrls(backUrls)
-                .paymentMethods(paymentMethods)
-                .autoReturn("approved")
-                .externalReference(orderId.toString())
-                .build();
+            PreferenceClient client = new PreferenceClient();
+            Preference preference = client.create(preferenceRequest);
+            return ResponseEntity.ok("{\"preferenceId\":\"" + preference.getId() + "\"}");
 
-        PreferenceClient client = new PreferenceClient();
-        Preference preference = client.create(preferenceRequest);
-
-        return ResponseEntity.ok("{\"preferenceId\":\"" + preference.getId() + "\"}");
     }
 }

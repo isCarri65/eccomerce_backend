@@ -16,6 +16,7 @@ import com.ecommerce.mappers.*;
 
 
 import com.ecommerce.repositories.ProductRepository;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -81,7 +83,32 @@ public class ProductService extends BaseService<Product, Long> {
         List<ProductGallery> galleries = productGalleryService.getAllByProductId(productId);
         ProductDTO productDTO = productMapper.toDTO(product);
         productDTO.setProductGalleries(productGalleryService.listEntityToDTO(galleries));
+
+        Optional<DiscountRule> discountOpt = discountService.getBestApplicableDiscount(product);
+        BigDecimal basePrice = product.getSellPrice();
+        if (discountOpt.isPresent()) {
+            DiscountRule discount = discountOpt.get();
+            productDTO.setDiscountPercentage(discount.getPercentage());
+            productDTO.setOriginalPrice(product.getSellPrice());
+
+            BigDecimal discountAmount = basePrice.multiply((discount.getPercentage()));
+            productDTO.setPrice(basePrice.subtract(discountAmount));
+
+        } else {
+            productDTO.setPrice(basePrice);
+            productDTO.setOriginalPrice(null);
+            productDTO.setDiscountPercentage(null);
+        }
         return productDTO;
+    }
+
+    @Transactional(readOnly = true)
+    public ProductAdminDTO findProductAdminById(Long id, Function<Product, ProductAdminDTO> mapper) {
+        Product entity = baseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entidad no encontrada por su id: " + id));
+        ProductAdminDTO productAdminDTO = mapper.apply(entity);
+        List<ProductGallery> galleries = productGalleryService.getAllByProductId(id);
+        productAdminDTO.setProductGalleries(productGalleryService.listEntityToDTO(galleries));
+        return productAdminDTO;
     }
 
     public ProductAdminDTO createProductWhitGalleries(CreateProductDTO createProductDTO) {
@@ -90,8 +117,10 @@ public class ProductService extends BaseService<Product, Long> {
         for (CreateProductGalleryDTO createProductGalleryDTO : productGalleryDTOS) {
             createProductGalleryDTO.setProductId(product.getId());
         }
-        productGalleryService.createEntitiesWhitDTOS(productGalleryDTOS);
-        return productAdminMapper.toDTO(product);
+        List<ProductGallery> galleries = productGalleryService.createEntitiesWhitDTOS(productGalleryDTOS);
+        ProductAdminDTO dto = productAdminMapper.toDTO(product);
+        dto.setProductGalleries(productGalleryService.listEntityToDTO(galleries));
+        return dto;
     }
 
 
@@ -135,7 +164,7 @@ public class ProductService extends BaseService<Product, Long> {
         if (categoryIds != null && categoryIds.size() > 10) {
             categoryIds = categoryIds.subList(0, 10);
         }
-
+        System.out.println(filter.getGenre());
         return productRepository.findFilteredProducts(
                 filter.getGenre(),
                 filter.getMinPrice(),
@@ -145,6 +174,7 @@ public class ProductService extends BaseService<Product, Long> {
                 categoryIds,
                 categoryIds != null ? categoryIds.size() : 0L,
                 filter.getTypeId(),
+                filter.getSearchTerm(),
                 pageable
         );
         // En ProductService:
@@ -184,7 +214,7 @@ public class ProductService extends BaseService<Product, Long> {
         Product saved = baseRepository.save(entity);
         return mapper.toDTO(saved);
     }
-
+    @Override
     @Transactional
     public <EntityDTO, CreateDTO, UpdateDTO> EntityDTO update(Long id, UpdateDTO dto, BaseAdminMapper<Product, EntityDTO, CreateDTO, UpdateDTO> mapper) {
         Product entity = baseRepository.findById(id)

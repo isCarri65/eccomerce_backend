@@ -2,18 +2,15 @@ package com.ecommerce.services;
 
 import com.ecommerce.dto.productVariant.CreateProductVariantDTO;
 import com.ecommerce.dto.productVariant.ProductVariantAdminDTO;
-import com.ecommerce.entities.Color;
-import com.ecommerce.entities.Product;
-import com.ecommerce.entities.ProductVariant;
-import com.ecommerce.entities.Size;
+import com.ecommerce.dto.productVariant.ProductVariantCartDTO;
+import com.ecommerce.entities.*;
 import com.ecommerce.mappers.ProductVariantAdminMapper;
-import com.ecommerce.repositories.ColorRepository;
-import com.ecommerce.repositories.ProductRepository;
-import com.ecommerce.repositories.ProductVariantRepository;
-import com.ecommerce.repositories.SizeRepository;
+import com.ecommerce.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -23,19 +20,36 @@ public class ProductVariantService extends BaseService<ProductVariant, Long> {
     private final SizeRepository sizeRepository;
     private final ColorRepository colorRepository;
     private final ProductRepository productRepository;
+    private final ProductService productService;
 
-    public ProductVariantService(ProductVariantRepository productVariantRepository, ProductVariantAdminMapper productVariantAdminMapper, SizeRepository sizeRepository, ColorRepository colorRepository, ProductRepository productRepository) {
+    public ProductVariantService(ProductVariantRepository productVariantRepository, ProductVariantAdminMapper productVariantAdminMapper, SizeRepository sizeRepository, ColorRepository colorRepository, ProductRepository productRepository, ProductService productService) {
         super(productVariantRepository);
         this.productVariantRepository = productVariantRepository;
         this.productVariantAdminMapper = productVariantAdminMapper;
         this.sizeRepository = sizeRepository;
         this.colorRepository = colorRepository;
         this.productRepository = productRepository;
+        this.productService = productService;
     }
     public Boolean hasStockAvalibleByProducId(Long id) {
         return productVariantRepository.existsByProductIdAndQuantityGreaterThanAndStateTrue(id, 0);
     }
 
+
+    public ProductVariantCartDTO getCartDTOById(Long id){
+        ProductVariant productVariant = productVariantRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Product variant not found"));
+        ProductVariantAdminDTO adminDTO = productVariantAdminMapper.toDTO(productVariant);
+        ProductVariantCartDTO cartDTO = new ProductVariantCartDTO();
+        cartDTO.setId(productVariant.getId());
+        cartDTO.setProductList(productService.getProductListDTO(productVariant.getProduct()));
+        cartDTO.setStock(productVariant.getQuantity());
+
+        cartDTO.setState(productVariant.getState());
+        cartDTO.setColor(adminDTO.getColor());
+        cartDTO.setSize(adminDTO.getSize());
+
+        return cartDTO;
+    }
 
     @Transactional
     public ProductVariantAdminDTO createVariant(Long productId, CreateProductVariantDTO createDTO) {
@@ -58,9 +72,7 @@ public class ProductVariantService extends BaseService<ProductVariant, Long> {
         System.out.println("variant = " + variant.getQuantity());
         product.addVariant(variant);
 
-        System.out.println("product = ");
         productRepository.save(product);
-        System.out.println("paso 3 ");
         return productVariantAdminMapper.toDTO(variant);
     }
 }

@@ -15,21 +15,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/products")
 public class ProductController extends BaseController<Product, Long, ProductAdminDTO, CreateProductDTO, UpdateProductDTO> {
     private final ProductService productService;
+    private final ProductAdminMapper mapper;
 
     public ProductController(ProductService productService, ProductAdminMapper productMapper) {
         super(productService, productMapper);
         this.productService = productService;
+        this.mapper = productMapper;
     }
 
     @PostMapping("/createWhitImages")
     public ResponseEntity<ProductAdminDTO> createProductWhitGalleries(@RequestBody CreateProductDTO dto){
         return ResponseEntity.ok(productService.createProductWhitGalleries(dto));
     }
-    /*
-    @PostMapping("/create")
-    public ResponseEntity<ProductAdminDTO> createProduct(@RequestBody CreateProductDTO dto){
-        return ResponseEntity.ok(productService.creteProduct(dto));
-    }*/
 
+    @Override
+    @GetMapping("/{id}") // Doble llave para escapar en format()
+    public ResponseEntity<ProductAdminDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.findProductAdminById(id, mapper::toDTO ));
+    }
 
 }

@@ -19,7 +19,7 @@ public class ProductDTO {
     private String genre;
     private BigDecimal price;
     private BigDecimal originalPrice;
-    private Double discountPercentage;
+    private BigDecimal discountPercentage;
     private boolean stockAvailable;
     private Set<CategoryDTO> categories; // Full category objects for the frontend
     private Set<ProductGalleryDTO> productGalleries;
