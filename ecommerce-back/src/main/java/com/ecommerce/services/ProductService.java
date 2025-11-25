@@ -2,17 +2,19 @@ package com.ecommerce.services;
 
 import com.ecommerce.dto.Product.CreateProductDTO;
 import com.ecommerce.dto.Product.ProductAdminDTO;
-
 import com.ecommerce.dto.Product.ProductDTO;
 import com.ecommerce.dto.Product.ProductListDTO;
+import com.ecommerce.dto.Product.UpdateProductDTO;
 import com.ecommerce.dto.ProductFilterDTO;
 import com.ecommerce.dto.ProductGallery.CreateProductGalleryDTO;
 import com.ecommerce.dto.productVariant.ProductVariantDTO;
+import com.ecommerce.dto.FileUploadResponse;
 import com.ecommerce.entities.DiscountRule;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.ProductGallery;
 import com.ecommerce.entities.ProductVariant;
 import com.ecommerce.mappers.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import com.ecommerce.repositories.ProductRepository;
@@ -40,8 +42,7 @@ public class ProductService extends BaseService<Product, Long> {
     private final ProductGalleryService productGalleryService;
     private final ProductVariantMapper productVariantMapper;
     private final ProductPricingCalculator productPricingCalculator;
-
-
+    private final FileUploadService fileUploadService;
     private final CategoryMapper categoryMapper;
 
     public ProductService(ProductRepository productRepository,
@@ -51,7 +52,8 @@ public class ProductService extends BaseService<Product, Long> {
                           ProductGalleryService productGalleryService,
                           CategoryMapper categoryMapper,
                           ProductVariantMapper productVariantMapper,
-                          ProductPricingCalculator productPricingCalculator) {
+                          ProductPricingCalculator productPricingCalculator,
+                          FileUploadService fileUploadService) {
         super(productRepository);
         this.productRepository = productRepository;
         this.productAdminMapper = productAdminMapper;
@@ -61,6 +63,7 @@ public class ProductService extends BaseService<Product, Long> {
         this.categoryMapper = categoryMapper;
         this.productVariantMapper = productVariantMapper;
         this.productPricingCalculator = productPricingCalculator;
+        this.fileUploadService = fileUploadService;
     }
 
     @Transactional(readOnly = true)
@@ -112,15 +115,9 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
     public ProductAdminDTO createProductWhitGalleries(CreateProductDTO createProductDTO) {
-        Product product = productRepository.save(productAdminMapper.CDTOtoEntity(createProductDTO));
-        List<CreateProductGalleryDTO> productGalleryDTOS = createProductDTO.getProductGalleries();
-        for (CreateProductGalleryDTO createProductGalleryDTO : productGalleryDTOS) {
-            createProductGalleryDTO.setProductId(product.getId());
-        }
-        List<ProductGallery> galleries = productGalleryService.createEntitiesWhitDTOS(productGalleryDTOS);
-        ProductAdminDTO dto = productAdminMapper.toDTO(product);
-        dto.setProductGalleries(productGalleryService.listEntityToDTO(galleries));
-        return dto;
+        // Este método es para compatibilidad con el sistema existente
+        // Ahora usa el nuevo método createProductWithImages
+        return createProductWithImages(createProductDTO);
     }
 
 
@@ -224,6 +221,83 @@ public class ProductService extends BaseService<Product, Long> {
         mapper.UDTOtoEntity(dto, entity);
         productPricingCalculator.updateCalculatedAtributes(entity);
         return mapper.toDTO(baseRepository.save(entity));
+    }
+
+    @Transactional
+    public ProductAdminDTO createProductWithImages(CreateProductDTO dto) {
+        // Crear el producto primero
+        Product product = productAdminMapper.CDTOtoEntity(dto);
+        productPricingCalculator.updateCalculatedAtributes(product);
+        Product savedProduct = baseRepository.save(product);
+        
+        // Procesar imágenes si existen
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            processProductImages(savedProduct.getId(), dto.getImages(), dto.getImageNames(), dto.getIsMainFlags());
+        }
+        
+        return productAdminMapper.toDTO(savedProduct);
+    }
+    
+    @Transactional
+    public ProductAdminDTO updateProductWithImages(Long id, UpdateProductDTO dto) {
+        Product product = baseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
+        
+        // Actualizar el producto
+        productAdminMapper.UDTOtoEntity(dto, product);
+        productPricingCalculator.updateCalculatedAtributes(product);
+        Product savedProduct = baseRepository.save(product);
+        
+        // Eliminar imágenes marcadas para eliminación
+        if (dto.getImagesToDelete() != null && !dto.getImagesToDelete().isEmpty()) {
+            deleteProductImages(dto.getImagesToDelete());
+        }
+        
+        // Procesar nuevas imágenes si existen
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            processProductImages(savedProduct.getId(), dto.getImages(), dto.getImageNames(), dto.getIsMainFlags());
+        }
+        
+        return productAdminMapper.toDTO(savedProduct);
+    }
+    
+    private void processProductImages(Long productId, List<MultipartFile> images, List<String> imageNames, List<Boolean> isMainFlags) {
+        for (int i = 0; i < images.size(); i++) {
+            MultipartFile image = images.get(i);
+            String imageName = (imageNames != null && i < imageNames.size()) ? imageNames.get(i) : image.getOriginalFilename();
+            Boolean isMain = (isMainFlags != null && i < isMainFlags.size()) ? isMainFlags.get(i) : false;
+            
+            // Subir imagen a Cloudinary
+            FileUploadResponse uploadResponse = fileUploadService.uploadFile(image, "products");
+            
+            // Crear ProductGallery
+            ProductGallery gallery = ProductGallery.builder()
+                    .imageUrl(uploadResponse.getImageUrl())
+                    .publicId(uploadResponse.getPublicId())
+                    .name(imageName)
+                    .isMain(isMain)
+                    .product(productRepository.findById(productId).orElseThrow())
+                    .build();
+            
+            // Si es imagen principal, desmarcar las otras
+            if (isMain) {
+                productGalleryService.setAsMainImage(productId, productId);
+            }
+            
+            productGalleryService.create(gallery);
+        }
+    }
+    
+    private void deleteProductImages(List<Long> imageIds) {
+        for (Long imageId : imageIds) {
+            ProductGallery gallery = productGalleryService.findById(imageId);
+            if (gallery != null) {
+                // Eliminar de Cloudinary
+                fileUploadService.deleteFile(gallery.getPublicId());
+                // Eliminar de base de datos
+                productGalleryService.reallyDelete(imageId);
+            }
+        }
     }
 
 }

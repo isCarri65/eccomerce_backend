@@ -28,4 +28,15 @@ public class ProductGalleryController extends BaseController<ProductGallery, Lon
         fileUploadService.deleteFile(publicId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{productId}/images/{imageId}")
+    public ResponseEntity<?> deleteImage(
+            @PathVariable Long productId,
+            @PathVariable Long imageId
+    ) {
+        productGalleryService.softDeleteImage(productId, imageId);
+        return ResponseEntity.ok("Imagen eliminada correctamente (borrado lógico).");
+    }
+
+
 }

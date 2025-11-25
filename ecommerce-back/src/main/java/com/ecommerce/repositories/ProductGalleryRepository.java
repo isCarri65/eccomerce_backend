@@ -10,4 +10,7 @@ import java.util.Optional;
 public interface ProductGalleryRepository extends BaseRepository<ProductGallery, Long> {
     Optional<ProductGallery> findByProduct_IdAndIsMain(Long productId, boolean isMain);
     List<ProductGallery> findByProductId(Long productId);
+
+    Optional<ProductGallery> findByIdAndProductId(Long id, Long productId);
+
 }

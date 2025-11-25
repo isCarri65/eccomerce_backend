@@ -23,6 +23,16 @@ public class ProductController extends BaseController<Product, Long, ProductAdmi
         this.mapper = productMapper;
     }
 
+    @PostMapping("/createWithImages")
+    public ResponseEntity<ProductAdminDTO> createProductWithImages(@ModelAttribute CreateProductDTO dto){
+        return ResponseEntity.ok(productService.createProductWithImages(dto));
+    }
+    
+    @PutMapping("/{id}/updateWithImages")
+    public ResponseEntity<ProductAdminDTO> updateProductWithImages(@PathVariable Long id, @ModelAttribute UpdateProductDTO dto){
+        return ResponseEntity.ok(productService.updateProductWithImages(id, dto));
+    }
+
     @PostMapping("/createWhitImages")
     public ResponseEntity<ProductAdminDTO> createProductWhitGalleries(@RequestBody CreateProductDTO dto){
         return ResponseEntity.ok(productService.createProductWhitGalleries(dto));

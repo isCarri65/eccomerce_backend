@@ -1,13 +1,10 @@
 package com.ecommerce.dto.Product;
 
-// ProductCreateDTO.java
-import com.ecommerce.dto.ProductGallery.CreateProductGalleryDTO;
-import com.ecommerce.dto.ProductGallery.ProductGalleryDTO;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 @Data
 public class CreateProductDTO {
@@ -18,5 +15,9 @@ public class CreateProductDTO {
     private Boolean state;
     private String genre; // Enum as String
     private List<Long> categories; // IDs of categories
-    private List<CreateProductGalleryDTO> productGalleries;
+    
+    // Imágenes del producto
+    private List<MultipartFile> images;
+    private List<String> imageNames; // Nombres opcionales para las imágenes
+    private List<Boolean> isMainFlags; // Flags para indicar cuál es la imagen principal
 }

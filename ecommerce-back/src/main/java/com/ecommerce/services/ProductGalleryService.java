@@ -6,6 +6,7 @@ import com.ecommerce.entities.ProductGallery;
 import com.ecommerce.mappers.ProductGalleryAdminMapper;
 import com.ecommerce.mappers.ProductGalleryMapper;
 import com.ecommerce.repositories.ProductGalleryRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,4 +42,32 @@ public class ProductGalleryService extends BaseService<ProductGallery, Long> {
     public Set<ProductGalleryDTO> listEntityToDTO(List<ProductGallery> productGalleries) {
         return productGalleries.stream().map(productGalleryMapper::toDTO).collect(Collectors.toSet());
     }
+    
+    public void setAsMainImage(Long galleryId, Long productId) {
+        // Primero desmarcar todas las imágenes principales del producto
+        List<ProductGallery> allImages = getAllByProductId(productId);
+        allImages.forEach(img -> img.setIsMain(false));
+        productGalleryRepository.saveAll(allImages);
+        
+        // Marcar la imagen seleccionada como principal
+        Optional<ProductGallery> mainImage = findByIdActive(galleryId);
+        if (mainImage.isPresent()) {
+            mainImage.get().setIsMain(true);
+            update(galleryId, mainImage.get());
+        }
+    }
+
+    @Transactional
+    public void softDeleteImage(Long productId, Long imageId) {
+
+        ProductGallery image = productGalleryRepository
+                .findByIdAndProductId(imageId, productId)
+                .orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
+
+        image.setDeleted(true);
+
+        productGalleryRepository.save(image);
+    }
+
+
 }

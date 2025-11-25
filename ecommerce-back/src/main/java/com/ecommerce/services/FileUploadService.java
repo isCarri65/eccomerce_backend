@@ -26,6 +26,7 @@ public class FileUploadService {
         }
         if (!allowedExtensions.contains(extension)) throw new InvalidFileExtensionException("Extension no soportada: ." + extension);
         try {
+            @SuppressWarnings("unchecked")
             Map<String, Object> resultUpload = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder","Ecommerce/"+fold));
             String imageUrl = resultUpload.get("secure_url").toString();
             String publicId = resultUpload.get("public_id").toString();
