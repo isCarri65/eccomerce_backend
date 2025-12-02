@@ -5,9 +5,13 @@ import com.ecommerce.dto.Product.ProductDTO;
 import com.ecommerce.dto.Product.ProductListDTO;
 import com.ecommerce.dto.ProductFilterDTO;
 import com.ecommerce.dto.productVariant.ProductVariantDTO;
+import com.ecommerce.entities.Product;
 import com.ecommerce.services.ProductService;
+import com.ecommerce.dto.Product.CreateProductDTO;
+import com.ecommerce.dto.Product.ProductAdminDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +43,9 @@ public class ProductPublicController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductListDTO>> getAllProducts() {
+    public ResponseEntity<List<ProductDTO>> getAllProducts() {
         return ResponseEntity.ok(service.getAll().stream()
-            .map(service::getProductListDTO)
+            .map(service::getProductDTO)
             .collect(Collectors.toList()));
     }
 
@@ -59,6 +63,20 @@ public class ProductPublicController {
         return ResponseEntity.ok(productService.searchProductsByName(search, pageable).map(service::getProductListDTO));
     }
 
+    @PostMapping(    
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductAdminDTO> create(@ModelAttribute CreateProductDTO product) {
+        return ResponseEntity.ok(productService.createProductWhitGalleries(product));
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
+        return ResponseEntity.ok(productService.update(id, product));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        productService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(List.class, "categoryIds", new PropertyEditorSupport() {

@@ -8,6 +8,7 @@ import com.ecommerce.dto.productVariant.ProductVariantDTO;
 import com.ecommerce.entities.Category;
 import com.ecommerce.entities.Product;
 import com.ecommerce.entities.ProductGenreENUM;
+import com.ecommerce.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public class ProductAdminMapper implements BaseAdminMapper<Product, ProductAdminDTO, CreateProductDTO, UpdateProductDTO> {
 
     private  final ProductVariantMapper productVariantMapper;
-
+    private final CategoryRepository categoryRepository;
 
     // Convert Product entity to ProductAdminDTO (to send to frontend)
     @Override
@@ -62,7 +63,7 @@ public class ProductAdminMapper implements BaseAdminMapper<Product, ProductAdmin
     @Override
     public Product CDTOtoEntity(CreateProductDTO dto) {
         if (dto == null) return null;
-        Set<Category> categories = mapCategoryIdsToEntities(dto.getCategories());
+        Set<Category> categories = mapCategoryIdsToEntities(dto.getCategoryId());
         return Product.builder()
                 .name(dto.getName())
                 .buyPrice(dto.getBuyPrice())
@@ -78,7 +79,7 @@ public class ProductAdminMapper implements BaseAdminMapper<Product, ProductAdmin
     // Convert UpdateDTO to Product entity (keeping the ID)
     @Override
     public void UDTOtoEntity(UpdateProductDTO dto, Product product) {
-        Set<Category> categories = mapCategoryIdsToEntities(dto.getCategoryIds());
+        Set<Category> categories = mapCategoryIdsToEntities(dto.getCategoryId());
         product.setName(dto.getName());
         product.setBuyPrice(dto.getBuyPrice());
         product.setSellPrice(dto.getSellPrice());
@@ -88,14 +89,12 @@ public class ProductAdminMapper implements BaseAdminMapper<Product, ProductAdmin
         product.setCategories(categories);
         product.setDeleted(dto.isDeleted());
     }
-    private Set<Category> mapCategoryIdsToEntities(List<Long> categoryIds) {
+    private Set<Category> mapCategoryIdsToEntities(Long categoryId) {
         Set<Category> categories = new HashSet<>();
-        for (Long categoryId : categoryIds) {
-            Category category = new Category();
-            category.setId(categoryId);
-            categories.add(category);
-        }
+        Category category = categoryRepository.getReferenceById(categoryId);
+        categories.add(category);
         return categories;
     }
+    
 
 }

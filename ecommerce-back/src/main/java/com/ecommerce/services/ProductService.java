@@ -120,6 +120,26 @@ public class ProductService extends BaseService<Product, Long> {
         return createProductWithImages(createProductDTO);
     }
 
+    @Transactional
+    public ProductDTO getProductDTO(Product product) {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(product.getId());
+        dto.setName(product.getName());
+        dto.setPrice(product.getSellPrice());
+        dto.setOriginalPrice(product.getSellPrice());
+        //dto.setDiscountPercentage(productPricingCalculator.updateCalculatedAtributes(product));
+        dto.setBuyPrice(product.getBuyPrice());
+        dto.setSellPrice(product.getSellPrice());
+        dto.setFinalPrice(product.getFinalPrice());
+        dto.setStockAvailable(product.getTotalStock() > 0);
+        dto.setCategories(product.getCategories().stream().map(categoryMapper::toDTO).collect(Collectors.toSet()));
+        dto.setProductGalleries(productGalleryService.listEntityToDTO(productGalleryService.getAllByProductId(product.getId())));
+        dto.setProductVariants(product.getProductVariants().stream().map(productVariantMapper::toDTO).collect(Collectors.toList()));
+    
+        dto.setDescription(product.getDescription());
+        dto.setGenre(product.getGenre() != null ? product.getGenre().name() : null);
+        return dto;
+    }
 
     @Transactional
     public ProductListDTO getProductListDTO(Product product) {
@@ -185,8 +205,12 @@ public class ProductService extends BaseService<Product, Long> {
     @Override
     @Transactional
     public Product create(Product entity) {
+        super.create(entity); // acá Hibernate ya asigna createdAt
+    
         productPricingCalculator.updateCalculatedAtributes(entity);
-        return super.create(entity); // guarda usando lógica base
+        super.update(entity.getId(), entity); // volvés a guardar los valores calculados
+    
+        return entity;
     }
 
     @Override
@@ -227,8 +251,9 @@ public class ProductService extends BaseService<Product, Long> {
     public ProductAdminDTO createProductWithImages(CreateProductDTO dto) {
         // Crear el producto primero
         Product product = productAdminMapper.CDTOtoEntity(dto);
-        productPricingCalculator.updateCalculatedAtributes(product);
         Product savedProduct = baseRepository.save(product);
+        productPricingCalculator.updateCalculatedAtributes(product);
+        savedProduct = baseRepository.save(savedProduct);
         
         // Procesar imágenes si existen
         if (dto.getImages() != null && !dto.getImages().isEmpty()) {
@@ -245,8 +270,9 @@ public class ProductService extends BaseService<Product, Long> {
         
         // Actualizar el producto
         productAdminMapper.UDTOtoEntity(dto, product);
-        productPricingCalculator.updateCalculatedAtributes(product);
         Product savedProduct = baseRepository.save(product);
+        productPricingCalculator.updateCalculatedAtributes(product);
+        savedProduct = baseRepository.save(savedProduct);
         
         // Eliminar imágenes marcadas para eliminación
         if (dto.getImagesToDelete() != null && !dto.getImagesToDelete().isEmpty()) {
@@ -280,9 +306,12 @@ public class ProductService extends BaseService<Product, Long> {
                     .build();
             
             // Si es imagen principal, desmarcar las otras
+            ProductGallery gallerySaved = productGalleryService.create(gallery);
+
             if (isMain) {
-                productGalleryService.setAsMainImage(productId, productId);
+                productGalleryService.setAsMainImage(gallerySaved.getId(), productId);
             }
+
             
             productGalleryService.create(gallery);
         }

@@ -6,11 +6,10 @@ import com.ecommerce.entities.Category;
 import com.ecommerce.mappers.CategoryMapper;
 import com.ecommerce.services.CategoryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
+
 
 @RestController
 @RequestMapping("/api/public/categories")
@@ -20,6 +19,19 @@ public class CategoryPublicController extends BasePublicController<Category, Lon
     public CategoryPublicController(CategoryService categoryService, CategoryMapper mapper) {
         super(categoryService, mapper);
         this.categoryService = categoryService;
+    }
+    @PostMapping
+    public ResponseEntity<Category> create(@RequestBody Category category) {
+        return ResponseEntity.ok(categoryService.create(category));
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Category> update(@PathVariable Long id, @RequestBody Category category) {
+        return ResponseEntity.ok(categoryService.update(id, category));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        categoryService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/getAllByTypeId/{id}")

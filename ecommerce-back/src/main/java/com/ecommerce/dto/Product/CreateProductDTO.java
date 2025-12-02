@@ -14,10 +14,10 @@ public class CreateProductDTO {
     private String description;
     private Boolean state;
     private String genre; // Enum as String
-    private List<Long> categories; // IDs of categories
-    
+    private Long categoryId;// IDs of categories
+    private String sizes;
     // Imágenes del producto
     private List<MultipartFile> images;
-    private List<String> imageNames; // Nombres opcionales para las imágenes
-    private List<Boolean> isMainFlags; // Flags para indicar cuál es la imagen principal
+    private List<String> imageNames;     // se repiten por cada imagen
+    private List<Boolean> isMainFlags;   // Flags para indicar cuál es la imagen principal, se repiten por cada imagen
 }

@@ -21,7 +21,7 @@ public class UpdateProductDTO {
     private Boolean state;
     private boolean deleted;
     private String genre;
-    private List<Long> categoryIds;
+    private Long categoryId;
     
     // Imágenes del producto
     private List<MultipartFile> images;

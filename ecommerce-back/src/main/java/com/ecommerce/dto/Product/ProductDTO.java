@@ -19,10 +19,13 @@ public class ProductDTO {
     private String genre;
     private BigDecimal price;
     private BigDecimal originalPrice;
+    private BigDecimal buyPrice;
+    private BigDecimal sellPrice;
+    private BigDecimal finalPrice;
     private BigDecimal discountPercentage;
     private boolean stockAvailable;
     private Set<CategoryDTO> categories; // Full category objects for the frontend
     private Set<ProductGalleryDTO> productGalleries;
     private List<ProductVariantDTO> productVariants;
-
+    private boolean deleted;
 }

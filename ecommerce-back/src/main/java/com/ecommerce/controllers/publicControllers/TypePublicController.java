@@ -6,11 +6,12 @@ import com.ecommerce.services.TypeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.Set;
 
@@ -22,6 +23,21 @@ public class TypePublicController {
     public TypePublicController(TypeService service) {
         this.service = service;
     }
+
+    @PostMapping    
+    public ResponseEntity<Type> create(@RequestBody Type type) {
+        return ResponseEntity.ok(service.create(type));
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Type> update(@PathVariable Long id, @RequestBody Type type) {
+        return ResponseEntity.ok(service.update(id, type));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+    
 
     @GetMapping
     public ResponseEntity<Set<Type>> getAllActives() {

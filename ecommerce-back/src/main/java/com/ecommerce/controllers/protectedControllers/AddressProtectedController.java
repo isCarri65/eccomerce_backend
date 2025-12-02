@@ -9,11 +9,9 @@ import com.ecommerce.mappers.AddressMapper;
 import com.ecommerce.services.AddressService;
 import com.ecommerce.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
